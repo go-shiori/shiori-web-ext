@@ -1,0 +1,17 @@
+{
+    "manifest_version": 2,
+    "version": "0.1",
+    "name": "Shiori",
+    "author": "Radhi Fadlillah",
+    "description": "Web extension for Shiori, a simple bookmark manager.",
+    "homepage_url": "https://github.com/go-shiori/shiori-web-ext",
+    "icons": {
+        "48": "icons/icon.svg",
+        "96": "icons/icon.svg"
+    },
+
+    "permissions": [
+        "<all_urls>",
+        "activeTab"
+    ]
+}
