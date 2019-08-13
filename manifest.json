@@ -12,6 +12,13 @@
 
     "permissions": [
         "<all_urls>",
-        "activeTab"
-    ]
+        "activeTab",
+        "storage"
+    ],
+
+    "options_ui": {
+        "page": "view/options.html",
+        "browser_style": true,
+        "chrome_style": true
+    }
 }

@@ -1,0 +1,103 @@
+:root {
+    --contentBg: #FFF;
+    --border: #E5E5E5;
+    --color: #232323;
+    --main: #F44336;
+    --errorColor: #F44336;
+    --buttonColor: #FFF;
+    --buttonBg: #292929;
+
+    @media (prefers-color-scheme: dark) {
+        &:root {
+            --contentBg: #292929;
+            --border: #191919;
+            --color: #FFF;
+        }
+    }
+}
+
+* {
+    border-width: 0;
+    box-sizing: border-box;
+    font-family: "Source Sans Pro", sans-serif;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+a {
+    cursor: pointer;
+}
+
+body {
+    font-size: 16px;
+}
+
+#error-message {
+    width: 100%;
+    max-width: 400px;
+    font-size: 1em;
+    background-color: var(--contentBg);
+    border: 1px solid var(--border);
+    padding: 8px;
+    margin-top: 16px;
+    text-align: center;
+    color: var(--errorColor);
+}
+
+#login-box {
+    display: grid;
+    grid-gap: 16px;
+    margin: 16px 0;
+    padding: 16px;
+    grid-template-columns: auto 1fr;
+    justify-content: baseline;
+    align-items: center;
+    border: 1px solid var(--border);
+
+    width: 100%;
+    max-width: 400px;
+
+    p {
+        grid-column-start: 1;
+        grid-column-end: -1;
+        font-size: 0.9em;
+        text-align: center;
+    }
+
+    >label {
+        color: var(--color);
+    }
+
+    >input {
+        color: var(--color);
+        padding: 8px;
+        background-color: var(--contentBg);
+        border: 1px solid var(--border);
+        min-width: 0;
+        font-size: 1em;
+    }
+
+    a.button {
+        color: var(--buttonColor);
+        text-transform: uppercase;
+        text-align: center;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 8px;
+        grid-column-start: 1;
+        grid-column-end: -1;
+        justify-content: center;
+        background-color: var(--buttonBg);
+        border: 1px solid var(--border);
+
+        &:hover,
+        &:focus {
+            color: var(--main);
+        }
+    }
+
+    #loading-sign{
+        line-height: 39px;
+    }
+}

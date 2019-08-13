@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Login - Shiori</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/source-sans-pro.min.css" rel="stylesheet">
+    <link href="css/fontawesome.min.css" rel="stylesheet">
+    <link href="css/options.css" rel="stylesheet">
+</head>
+
+<body>
+    <p id="error-message" style="display: none"></p>
+    <div id="login-box">
+        <p id="txt-session">No active session</p>
+        <label for="server">Server: </label>
+        <input id="input-server" type="text" name="server" placeholder="URL to Shiori server" tabindex="1">
+        <label for="username">Username: </label>
+        <input id="input-username" type="text" name="username" placeholder="Username" tabindex="2">
+        <label for="password">Password: </label>
+        <input id="input-password" type="password" name="password" placeholder="Password" tabindex="3">
+        <a id="btn-login" class="button" tabindex="4">Log In</a>
+        <p id="loading-sign" style="display: none"><i class="fas fa-fw fa-spinner fa-spin"></i></p>
+    </div>
+
+    <script src="js/options.js"></script>
+</body>
+
+</html>
