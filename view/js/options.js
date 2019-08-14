@@ -161,6 +161,11 @@ function eventHandler() {
             });
         })
         .catch(err => {
+            if (err instanceof Error) {
+                showError(err.message);
+                return;
+            }
+
             err.text().then(msg => {
                 showError(`${msg} (${err.status})`);
             })
