@@ -16,9 +16,33 @@
         "storage"
     ],
 
+    "background": {
+        "scripts": ["background-script.js"]
+    },
+
     "options_ui": {
         "page": "view/options.html",
         "browser_style": true,
         "chrome_style": true
+    },
+    
+    "browser_action": {
+        "browser_style": true,
+        "default_title": "Shiori",
+        "default_icon": "icons/action-default.svg",
+        "default_popup": "view/popup.html",
+        "theme_icons": [{
+            "dark": "icons/action-dark.svg",
+            "light": "icons/action-light.svg",
+            "size": 16
+        }, {
+            "dark": "icons/action-dark.svg",
+            "light": "icons/action-light.svg",
+            "size": 32
+        }, {
+            "dark": "icons/action-dark.svg",
+            "light": "icons/action-light.svg",
+            "size": 64
+        }]
     }
 }
