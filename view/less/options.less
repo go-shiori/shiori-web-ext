@@ -6,14 +6,6 @@
     --errorColor: #F44336;
     --buttonColor: #FFF;
     --buttonBg: #292929;
-
-    @media (prefers-color-scheme: dark) {
-        &:root {
-            --contentBg: #292929;
-            --border: #191919;
-            --color: #FFF;
-        }
-    }
 }
 
 * {
@@ -46,6 +38,8 @@ body {
 }
 
 #login-box {
+    width: 100%;
+    max-width: 400px;
     display: grid;
     grid-gap: 16px;
     margin: 16px 0;
@@ -54,15 +48,14 @@ body {
     justify-content: baseline;
     align-items: center;
     border: 1px solid var(--border);
-
-    width: 100%;
-    max-width: 400px;
+    background-color: var(--contentBg);
 
     p {
         grid-column-start: 1;
         grid-column-end: -1;
         font-size: 0.9em;
         text-align: center;
+        color: var(--color);
     }
 
     >label {
