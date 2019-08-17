@@ -12,13 +12,19 @@
 
     "permissions": [
         "<all_urls>",
-        "activeTab",
-        "storage"
+        "tabs",
+        "storage",
+        "bookmarks"
     ],
 
     "background": {
         "scripts": ["background-script.js"]
     },
+
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["content-script.js"]
+    }],
 
     "options_ui": {
         "page": "view/options.html",
