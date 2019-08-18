@@ -1,8 +1,12 @@
 browser.runtime.onMessage.addListener(request => {
-	var response = document.documentElement.innerHTML;
+	var html = document.documentElement.innerHTML,
+		title = document.title;
 
-	if (response) {
-		return Promise.resolve(response.replace(/\s+/g, " "));
+	if (typeof html == "string") {
+		return Promise.resolve({
+			title: title,
+			html: html.replace(/\s+/g, " "),
+		});
 	} else {
 		return Promise.reject(new Error("html content not available"));
 	}
