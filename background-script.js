@@ -16,12 +16,12 @@ async function getCurrentTab() {
     return tabs[0];
 }
 
-async function getHtmlContent(tab) {
+async function getPageContent(tab) {
     try {
-        var rawHtml = await browser.tabs.sendMessage(tab.id, "raw-html");
-        return rawHtml;
+        var content = await browser.tabs.sendMessage(tab.id, "page-content");
+        return content;
     } catch {
-        return "";
+        return {};
     }
 }
 
@@ -49,6 +49,41 @@ async function getShioriBookmarkFolder() {
     return shioriFolder;
 }
 
+async function saveLocalBookmark(url, title) {
+    var shioriFolder = await getShioriBookmarkFolder(),
+        existingBookmarks = await browser.bookmarks.search({
+            url: url,
+        });
+
+    var idx = existingBookmarks.findIndex(book => {
+        return book.parentId === shioriFolder.id;
+    });
+
+    if (idx === -1) {
+        await browser.bookmarks.create({
+            url: url,
+            title: title,
+            parentId: shioriFolder.id,
+        });
+    }
+
+    return Promise.resolve();
+}
+
+async function removeLocalBookmark(url) {
+    var shioriFolder = await getShioriBookmarkFolder(),
+        existingBookmarks = await browser.bookmarks.search({
+            url: url,
+        });
+
+    existingBookmarks.forEach(book => {
+        if (book.parentId !== shioriFolder.id) return;
+        browser.bookmarks.remove(book.id);
+    });
+
+    return Promise.resolve();
+}
+
 async function getExtensionConfig() {
     var items = await browser.storage.local.get(),
         session = items.session || "",
@@ -68,11 +103,52 @@ async function getExtensionConfig() {
     };
 }
 
+async function openLibraries() {
+    var config = await getExtensionConfig();
+    return browser.tabs.create({
+        active: true,
+        url: config.server,
+    });
+}
+
+async function removeBookmark() {
+    var tab = await getCurrentTab(),
+        config = await getExtensionConfig();
+
+    // Create API URL
+    var apiURL = "";
+    try {
+        apiURL = new URL("/api/bookmarks/ext", config.server);
+    } catch(err) {
+        throw new Error(`${config.server} is not a valid url`);
+    }
+
+    // Send request via background script
+    var response = await fetch(apiURL, {
+        method: "delete",
+        body: JSON.stringify({url: tab.url}),
+        headers: {
+            "Content-Type": "application/json",
+            "X-Session-Id": config.session,
+        }
+    });
+
+    if (!response.ok) {
+        var err = await response.text();
+        throw new Error(err);
+    }
+
+    // Remove local bookmark
+    await removeLocalBookmark(tab.url);
+
+    return Promise.resolve();
+}
+
 async function saveBookmark(tags) {
     // Get value from async function
     var tab = await getCurrentTab(),
         config = await getExtensionConfig(),
-        rawHtml = await getHtmlContent(tab);
+        content = await getPageContent(tab);
     
     // Create API URL
     var apiURL = "";
@@ -86,7 +162,7 @@ async function saveBookmark(tags) {
     var data = {
         url: tab.url,
         tags: tags,
-        createArchive: true,
+        html: content.html || "",
     }
 
     var response = await fetch(apiURL, {
@@ -103,14 +179,40 @@ async function saveBookmark(tags) {
         throw new Error(err);
     }
 
+    // Save to local bookmark
+    var pageTitle = content.title || "";
+    await saveLocalBookmark(tab.url, pageTitle);
+
     return Promise.resolve();
 }
 
 // Define event handler
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    return new Promise((resolve, reject) => {
-        saveBookmark(request.tags)
-            .then(() => { resolve() })
-            .catch(err => { reject(err) });
-    });
+    var task = Promise.resolve();
+
+    switch (request.type) {
+        case "open-libraries":
+            task = new Promise((resolve, reject) => {
+                openLibraries()
+                    .then(() => { resolve() })
+                    .catch(err => { reject(err) });
+            });
+            break;
+        case "remove-bookmark":
+            task = new Promise((resolve, reject) => {
+                removeBookmark()
+                    .then(() => { resolve() })
+                    .catch(err => { reject(err) });
+            });
+            break;
+        case "save-bookmark":
+            task = new Promise((resolve, reject) => {
+                saveBookmark(request.tags)
+                    .then(() => { resolve() })
+                    .catch(err => { reject(err) });
+            });
+            break;
+    }
+
+    return task;
 });
