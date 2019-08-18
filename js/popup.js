@@ -21,7 +21,7 @@ btnLibraries.addEventListener("click", (e) => {
     browser.runtime.sendMessage({type: "open-libraries"})
         .finally(() => { window.close() });
 });
-    
+
 btnSave.addEventListener("click", (e) => {
     // Get input value
     var tags = inputTags.value
