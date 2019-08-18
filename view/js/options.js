@@ -1,13 +1,107 @@
-// Get DOM
+// Define async function
+async function getExtensionConfig() {
+    var items = await browser.storage.local.get();
+
+    return {
+        server: items.server || "",
+        session: items.session || "",
+        username: items.username || "",
+        password: items.password || "",
+    };
+}
+
+async function saveExtensionConfig(cfg) {
+    return browser.storage.local.set(cfg);
+}
+
+async function logout(server, session) {
+    // Make sure session is exists
+    if (session === "") return Promise.resolve();
+
+    // Validate input
+    if (server === "") {
+        throw new Error("Server must not empty");
+    }
+
+    // Create logout url
+    var logoutURL = "";
+    try {
+        logoutURL = new URL("/api/logout", server);
+    } catch(err) {
+        throw new Error(`${server} is not a valid url`);
+    }
+
+    // Send logout request
+    var response = await fetch(logoutURL, {
+        method: "post",
+        headers: {
+            "X-Session-Id": session,
+        }
+    });
+
+    if (!response.ok) {
+        var err = await response.text();
+        throw new Error(err);
+    }
+
+    return Promise.resolve();
+}
+
+async function login(server, username, password) {
+    // Validate input
+    if (server === "") {
+        throw new Error("Server must not empty");
+    }
+
+    if (username === "") {
+        throw new Error("Username must not empty");
+    }
+
+    if (password === "") {
+        throw new Error("Password must not empty");
+    }
+
+    // Create login URL
+    var loginURL = "";
+    try {
+        loginURL = new URL("/api/login", server);
+    } catch(err) {
+        throw new Error(`${server} is not a valid url`);
+    }
+
+    // Send login request
+    var response = await fetch(loginURL, {
+        method: "post",
+        body: JSON.stringify({
+            username: username,
+            password: password,
+        }),
+        headers: {
+            "Content-Type": "application/json",
+        }
+    });
+
+    if (!response.ok) {
+        var err = await response.text();
+        throw new Error(err);
+    }
+
+    var jsonResp = await response.json(),
+        session = jsonResp.session;
+
+    return session;
+}
+
+// Define function for UI handler
 var errorMessage = document.getElementById("error-message"),
     txtSession = document.getElementById("txt-session"),
     inputServer = document.getElementById("input-server"),
     inputUsername = document.getElementById("input-username"),
     inputPassword = document.getElementById("input-password"),
     btnLogin = document.getElementById("btn-login"),
-    loadingSign = document.getElementById("loading-sign");
+    loadingSign = document.getElementById("loading-sign"),
+    config = {};
 
-// Define local function
 function showLoading() {
     btnLogin.style.display = "none";
     loadingSign.style.display = "block";
@@ -18,161 +112,57 @@ function hideLoading() {
     loadingSign.style.display = "none";
 }
 
-function hideError() {
-    errorMessage.style.display = "none";
-}
-
 function showError(msg) {
     errorMessage.style.display = "block";
     errorMessage.textContent = msg;
 }
 
-function getItems(items) {
-    var session = items.session || "",
-        server = items.server || "",
-        username = items.username || "",
-        password = items.password || "";
-    
-    if (session === "") txtSession.textContent = "No active session";
-    else txtSession.textContent = `Active session: ${session}`;
-
-    inputServer.value = server;
-    inputUsername.value = username;
-    inputPassword.value = password;
+function hideError() {
+    errorMessage.style.display = "none";
 }
 
-function logout() {
-    // Get DOM value
-    var session = txtSession.textContent,
-        server = inputServer.value;
+getExtensionConfig()
+    .then(cfg => {
+        config = cfg;
 
-    // Get session ID
-    if (session === "") return Promise.resolve();
-    else if (session === "No active session") return Promise.resolve();
-    else session = session.replace("Active session: ", "");
+        if (cfg.session === "") txtSession.textContent = "No active session";
+        else txtSession.textContent = `Active session: ${cfg.session}`;
 
-    // Create logout URL
-    var logoutURL = "";
-    try {
-        logoutURL = new URL("/api/logout", server);
-    } catch(err) {
-        return Promise.reject(new Error(`${server} is not a valid url`));
-    }
+        inputServer.value = cfg.server;
+        inputUsername.value = cfg.username;
+        inputPassword.value = cfg.password;
+    })
+    .catch(err => showError(err));
 
-    // Send logout request
-    return new Promise((resolve, reject) => {
-        var fetchData = {
-            method: "post",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Session-Id": session,
-            },
-        };
-
-        fetch(logoutURL, fetchData)
-            .then(response => {
-                if (!response.ok) throw response;
-                return resolve();
-            })
-            .catch(err => {
-                reject(err);
-            });
-    });
-}
-
-function login() {
+// Register event listener
+async function btnLoginClick() {
     // Get input value
     var server = inputServer.value,
         username = inputUsername.value,
         password = inputPassword.value;
 
-    // Validate input
-    if (server === "") {
-        return Promise.reject(new Error("Server must not empty"));
-    }
+    // Make sure to log out first
+    await logout(server, config.session);
+    
+    // Login using input value
+    var newSession = await login(server, username, password);
 
-    if (username === "") {
-        return Promise.reject(new Error("Username must not empty"));
-    }
+    // Save input value and session to config
+    config.server = server;
+    config.session = newSession;
+    config.username = username;
+    config.password = password;
+    await saveExtensionConfig(config);
+    txtSession.textContent = `Active session: ${newSession}`;
 
-    if (password === "") {
-        return Promise.reject(new Error("Password must not empty"));
-    }
-
-    // Create login URL
-    var loginURL = "";
-    try {
-        loginURL = new URL("/api/login", server);
-    } catch(err) {
-        return Promise.reject(new Error(`${server} is not a valid url`));
-    }
-
-    // Send login request
-    return new Promise((resolve, reject) => {
-        var fetchData = {
-            method: "post",
-            body: JSON.stringify({
-                username: username,
-                password: password,
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        };
-
-        fetch(loginURL, fetchData)
-            .then(response => {
-                if (!response.ok) throw response;
-                return response.json();
-            })
-            .then(jsonData => {
-                resolve({
-                    server: server,
-                    username: username,
-                    password: password,
-                    session: jsonData.session,
-                });
-            })
-            .catch(err => {
-                reject(err);
-            });
-    });
+    return Promise.resolve();
 }
 
-// Load local storage
-browser.storage.local.get().then(getItems).catch(showError);
-
-// Register event listener
-function eventHandler() {
+btnLogin.addEventListener("click", () => {
+    hideError();
     showLoading();
 
-    logout().then(login)
-        .then(loginResult => {
-            return new Promise((resolve, reject) => {
-                browser.storage.local.set(loginResult)
-                    .then(() => {
-                        hideError();
-                        txtSession.textContent = `Active session: ${loginResult.session}`;
-                        resolve();
-                    })
-                    .catch(err => {
-                        reject(err);
-                    })
-            });
-        })
-        .catch(err => {
-            if (err instanceof Error) {
-                showError(err.message);
-                return;
-            }
-
-            err.text().then(msg => {
-                showError(`${msg} (${err.status})`);
-            })
-        })
-        .finally(() => {
-            hideLoading();
-        });
-}
-
-btnLogin.addEventListener("click", eventHandler);
+    btnLoginClick()
+        .catch(err => showError(err))
+        .finally(() => hideLoading());
+});
