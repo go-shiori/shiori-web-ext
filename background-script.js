@@ -9,11 +9,19 @@ async function getCurrentTab() {
         throw new Error("no tab available");
     }
 
-    if (tabs[0].url.startsWith("about:")) {
-        throw new Error("config page is not bookmarkable");
+    // Make sure URL protocol supported
+    var supportedProtocols = ["https:", "http:", "ftp:", "file:"],
+        activeTab = tabs[0],
+        url = document.createElement('a');
+
+    if (activeTab.url !== "") {
+        url.href = activeTab.url;
+        if (supportedProtocols.indexOf(url.protocol) === -1) {
+            throw new Error(`protocol "${url.protocol}" is not supported`);
+        }
     }
 
-    return tabs[0];
+    return activeTab;
 }
 
 async function getPageContent(tab) {
@@ -47,6 +55,23 @@ async function getShioriBookmarkFolder() {
     })
 
     return shioriFolder;
+}
+
+async function findLocalBookmark(url) {
+    var shioriFolder = await getShioriBookmarkFolder(),
+        existingBookmarks = await browser.bookmarks.search({
+            url: url,
+        });
+
+    var idx = existingBookmarks.findIndex(book => {
+        return book.parentId === shioriFolder.id;
+    });
+
+    if (idx >= 0) {
+        return existingBookmarks[idx];
+    } else {
+        return null;
+    }
 }
 
 async function saveLocalBookmark(url, title) {
@@ -186,6 +211,21 @@ async function saveBookmark(tags) {
     return Promise.resolve();
 }
 
+async function updateIcon() {
+    // Set initial icon
+    var icon = {};
+
+    // Get current active tab
+    try {
+        var tab = await getCurrentTab(),
+            local = await findLocalBookmark(tab.url);
+        
+        if (local) icon.path = "icons/action-bookmarked.svg";
+    } catch {}
+
+    return browser.browserAction.setIcon(icon);
+}
+
 // Define event handler
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     var task = Promise.resolve();
@@ -216,3 +256,15 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     return task;
 });
+
+// Add handler for icon change
+function updateActiveTab()  {
+    updateIcon().catch(err => console.error(err.message));
+}
+
+browser.bookmarks.onCreated.addListener(updateActiveTab);
+browser.bookmarks.onRemoved.addListener(updateActiveTab);
+browser.tabs.onUpdated.addListener(updateActiveTab);
+browser.tabs.onActivated.addListener(updateActiveTab);
+browser.windows.onFocusChanged.addListener(updateActiveTab);
+updateActiveTab();
