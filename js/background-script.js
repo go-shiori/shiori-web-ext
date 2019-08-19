@@ -26,7 +26,7 @@ async function getCurrentTab() {
 
 async function getPageContent(tab) {
     try {
-        var content = await browser.tabs.sendMessage(tab.id, "page-content");
+        var content = await browser.tabs.sendMessage(tab.id, {type: "page-content"});
         return content;
     } catch {
         return {};

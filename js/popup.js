@@ -5,6 +5,26 @@ var inputTags = document.getElementById("input-tags"),
     btnSave = document.getElementById("btn-save"),
     loading = document.getElementById("loading-sign");
 
+async function showError(err) {
+    var tabs = await browser.tabs.query({
+        currentWindow: true,
+        active: true,
+    });
+
+    if (tabs.length < 1) {
+        throw new Error("no tab available");
+    }
+
+    if (err instanceof Error) {
+        err = err.message;
+    }
+
+    return browser.tabs.sendMessage(tabs[0].id, {
+        type: "show-error",
+        message: err,
+    });
+}
+
 // Add event handler
 btnRemove.addEventListener("click", (e) => {
     // Show loading indicator
@@ -13,7 +33,7 @@ btnRemove.addEventListener("click", (e) => {
     btnRemove.style.display = "none";
 
     browser.runtime.sendMessage({type: "remove-bookmark"})
-        .catch(err => console.error(err.message))
+        .catch(err => showError(err))
         .finally(() => { window.close() });
 });
 
@@ -46,8 +66,7 @@ btnSave.addEventListener("click", (e) => {
     }
 
     browser.runtime.sendMessage(message)
-        .then(() => console.log("OK"))
-        .catch(err => console.error(err.message))
+        .catch(err => showError(err))
         .finally(() => {
             btnSave.style.display = "block";
             loading.style.display = "none";

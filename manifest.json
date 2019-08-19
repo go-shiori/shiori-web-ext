@@ -26,6 +26,7 @@
 
     "content_scripts": [{
         "matches": ["<all_urls>"],
+        "css": ["css/dialog.css"],
         "js": [
             "js/browser-polyfill.min.js",
             "js/content-script.js"

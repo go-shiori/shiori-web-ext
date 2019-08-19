@@ -1,0 +1,101 @@
+:root {
+    --contentBg: #FFF;
+    --border: #E5E5E5;
+    --color: #232323;
+    --main: #F44336;
+    --dialogHeaderBg: #292929;
+    --colorDialogHeader: #FFF;
+
+    @media (prefers-color-scheme: dark) {
+        &:root {
+            --contentBg: #292929;
+            --border: #191919;
+            --color: #FFF;
+        }
+    }
+}
+
+.base-mixin() {
+    border-width: 0;
+    box-sizing: border-box;
+    font-family: "Source Sans Pro", sans-serif;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+.shiori-ext-dialog-overlay {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999999999;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 32px;
+    font-size: 16px;
+    .base-mixin();
+
+    .shiori-ext-dialog {
+        display: flex;
+        flex-flow: column nowrap;
+        width: 100%;
+        max-width: 400px;
+        min-height: 0;
+        max-height: 100%;
+        overflow: auto;
+        background-color: var(--contentBg);
+        font-size: 16px;
+        .base-mixin();
+
+        .shiori-ext-dialog-header {
+            .base-mixin();
+            padding: 16px;
+            color: var(--colorDialogHeader);
+            background-color: var(--dialogHeaderBg);
+            font-weight: 600;
+            font-size: 1em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .shiori-ext-dialog-body {
+            .base-mixin();
+            padding: 16px;
+            overflow: auto;
+            font-size: 1em;
+        }
+        
+        .shiori-ext-dialog-footer {
+            .base-mixin();
+            padding: 16px;
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: flex-end;
+            border-top: 1px solid var(--border);
+
+            >a {
+                .base-mixin();
+                padding: 0 8px;
+                font-size: 0.9em;
+                font-weight: 600;
+                color: var(--color);
+                text-transform: uppercase;
+                cursor: pointer;
+
+                &:hover,
+                &:focus {
+                    outline: none;
+                    color: var(--main);
+                }
+            }
+        }
+    }
+}
