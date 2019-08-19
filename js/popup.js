@@ -67,8 +67,5 @@ btnSave.addEventListener("click", (e) => {
 
     browser.runtime.sendMessage(message)
         .catch(err => showError(err))
-        .finally(() => {
-            btnSave.style.display = "block";
-            loading.style.display = "none";
-        });
+        .finally(() => window.close());
 });
