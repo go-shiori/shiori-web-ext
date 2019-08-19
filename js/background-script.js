@@ -36,25 +36,31 @@ async function getPageContent(tab) {
 async function getShioriBookmarkFolder() {
     // TODO:
     // I'm not sure it's the most efficient way, but it's the simplest.
+    // We want to put Shiori folder in `Other bookmarks`, which id different depending on browser.
+    // In Firefox, its id is `unfiled_____` while in Chrome the id is `2`.
+    var parentId = "",
+        runtimeUrl = await browser.runtime.getURL("/");
     
-    // First, just create the Shiori folder
-    var shioriFolder = await browser.bookmarks.create({title: "Shiori"});
-
-    // Next, check if it has siblings with name "Shiori"
-    var siblings = await browser.bookmarks.getChildren(shioriFolder.parentId),
-        shioris = siblings.filter(el => {
-            return el.type === "folder" && 
-                el.title === "Shiori" && 
-                el.id !== shioriFolder.id;
-        });
-    
-    if (shioris.length === 0) return shioriFolder;
-    else {
-        await browser.bookmarks.removeTree(shioriFolder.id);
-        return shioris[0];
+    if (runtimeUrl.startsWith("moz")) {
+        parentId = "unfiled_____";
+    } else if (runtimeUrl.startsWith("chrome")) {
+        parentId = "2";
+    } else {
+        throw new Error("right now extension only support firefox and chrome")
     }
-    
-    return shioriFolder;
+
+    // Check if the parent folder already has Shiori folder
+    var children = await browser.bookmarks.getChildren(parentId),
+        shiori = children.find(el => el.url == null && el.title === "Shiori");
+
+    if (!shiori) {
+        shiori = await browser.bookmarks.create({
+            title: "Shiori",
+            parentId: parentId
+        });
+    }
+
+    return shiori;
 }
 
 async function findLocalBookmark(url) {
