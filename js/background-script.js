@@ -34,26 +34,26 @@ async function getPageContent(tab) {
 }
 
 async function getShioriBookmarkFolder() {
-    // Get bookmark's root menu
-    var items = await browser.bookmarks.search({}),
-        menuFolder = items.find(el => el.type === "folder");
-
-    if (menuFolder == null) {
-        throw new Error("bookmarks menu not found");
-    }
-
-    // Check if `Shiori` folder already exists inside menu folder
-    var menuChildren = await browser.bookmarks.getChildren(menuFolder.id),
-        shioriFolder = menuChildren.find(el => el.type === "folder" && el.title === "Shiori");
+    // TODO:
+    // I'm not sure it's the most efficient way, but it's the simplest.
     
-    // If already exists, return as it is. Else, create it.
-    if (shioriFolder != null) return shioriFolder;
+    // First, just create the Shiori folder
+    var shioriFolder = await browser.bookmarks.create({title: "Shiori"});
 
-    shioriFolder = await browser.bookmarks.create({
-        title: "Shiori",
-        parentId: menuFolder.id
-    })
-
+    // Next, check if it has siblings with name "Shiori"
+    var siblings = await browser.bookmarks.getChildren(shioriFolder.parentId),
+        shioris = siblings.filter(el => {
+            return el.type === "folder" && 
+                el.title === "Shiori" && 
+                el.id !== shioriFolder.id;
+        });
+    
+    if (shioris.length === 0) return shioriFolder;
+    else {
+        await browser.bookmarks.removeTree(shioriFolder.id);
+        return shioris[0];
+    }
+    
     return shioriFolder;
 }
 
@@ -213,14 +213,29 @@ async function saveBookmark(tags) {
 
 async function updateIcon() {
     // Set initial icon
-    var icon = {};
+    var runtimeUrl = await browser.runtime.getURL("/"),
+        icon = {path: {
+            16: "icons/action-default-16.png",
+            32: "icons/action-default-32.png",
+            64: "icons/action-default-64.png"
+        }};
+    
+    // Firefox allows using empty object as default icon.
+    // This way, Firefox will use default_icon that defined in manifest.json
+    if (runtimeUrl.startsWith("moz")) {
+        icon = {};
+    }
 
     // Get current active tab
     try {
         var tab = await getCurrentTab(),
             local = await findLocalBookmark(tab.url);
         
-        if (local) icon.path = "icons/action-bookmarked.svg";
+        if (local) icon.path = {
+            16: "icons/action-bookmarked-16.png",
+            32: "icons/action-bookmarked-32.png",
+            64: "icons/action-bookmarked-64.png"
+        }
     } catch {}
 
     return browser.browserAction.setIcon(icon);
