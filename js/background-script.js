@@ -29,7 +29,7 @@ async function getPageContent(tab) {
         var content = await browser.tabs.sendMessage(tab.id, {type: "page-content"});
         return content;
     } catch {
-        return {};
+        return "";
     }
 }
 
@@ -180,7 +180,7 @@ async function saveBookmark(tags) {
     var tab = await getCurrentTab(),
         config = await getExtensionConfig(),
         content = await getPageContent(tab);
-    
+
     // Create API URL
     var apiURL = "";
     try {
@@ -193,7 +193,7 @@ async function saveBookmark(tags) {
     var data = {
         url: tab.url,
         tags: tags,
-        html: content.html || "",
+        html: content,
     }
 
     var response = await fetch(apiURL, {
@@ -211,8 +211,7 @@ async function saveBookmark(tags) {
     }
 
     // Save to local bookmark
-    var pageTitle = content.title || "";
-    await saveLocalBookmark(tab.url, pageTitle);
+    await saveLocalBookmark(tab.url, tab.title);
 
     return Promise.resolve();
 }
