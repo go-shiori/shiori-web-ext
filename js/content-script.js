@@ -1,11 +1,15 @@
 async function getPageContent() {
-	var html = document.documentElement.innerHTML;
+	var html = document.documentElement.innerHTML,
+		title = document.title;
 
 	if (typeof html !== "string") {
 		throw new Error("html content not available");
 	}
 
-	return html.replace(/\s+/g, " ");
+	return {
+		title: title,
+		html: html.replace(/\s+/g, " "),
+	};
 }
 
 async function showError(msg) {

@@ -29,7 +29,7 @@ async function getPageContent(tab) {
         var content = await browser.tabs.sendMessage(tab.id, {type: "page-content"});
         return content;
     } catch {
-        return "";
+        return {};
     }
 }
 
@@ -193,7 +193,7 @@ async function saveBookmark(tags) {
     var data = {
         url: tab.url,
         tags: tags,
-        html: content,
+        html: content.html || "",
     }
 
     var response = await fetch(apiURL, {
@@ -211,7 +211,8 @@ async function saveBookmark(tags) {
     }
 
     // Save to local bookmark
-    await saveLocalBookmark(tab.url, tab.title);
+    var pageTitle = content.title || tab.title;
+    await saveLocalBookmark(tab.url, pageTitle);
 
     return Promise.resolve();
 }

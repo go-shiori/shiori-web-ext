@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "0.8.1",
+    "version": "0.8.2",
     "name": "Shiori",
     "author": "Radhi Fadlillah",
     "description": "Web extension for Shiori, a simple bookmark manager.",
