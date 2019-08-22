@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "0.8.0",
+    "version": "0.8.1",
     "name": "Shiori",
     "author": "Radhi Fadlillah",
     "description": "Web extension for Shiori, a simple bookmark manager.",
@@ -61,5 +61,12 @@
             "light": "icons/action-light-64.png",
             "size": 64
         }]
+    },
+
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "{c6e8bd66-ebb4-4b63-bd29-5ef59c795901}",
+            "update_url": "https://raw.githubusercontent.com/go-shiori/shiori-web-ext/master/updates.json"
+        }
     }
 }
