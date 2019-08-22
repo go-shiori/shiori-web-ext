@@ -19,7 +19,7 @@
 
     "background": {
         "scripts": [
-            "js/browser-polyfill.min.js",
+            "js/browser-polyfill.js",
             "js/background-script.js"
         ]
     },
@@ -28,7 +28,7 @@
         "matches": ["<all_urls>"],
         "css": ["css/dialog.css"],
         "js": [
-            "js/browser-polyfill.min.js",
+            "js/browser-polyfill.js",
             "js/content-script.js"
         ]
     }],
