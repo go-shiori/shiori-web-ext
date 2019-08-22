@@ -4,6 +4,9 @@
             "updates": [{ 
                 "version": "0.8.1",
                 "update_link": "https://github.com/go-shiori/shiori-web-ext/releases/download/0.8.1/shiori-0.8.1-fx.xpi"
+            }, { 
+                "version": "0.8.2",
+                "update_link": "https://github.com/go-shiori/shiori-web-ext/releases/download/0.8.2/shiori-0.8.2-fx.xpi"
             }]
         }
     }
