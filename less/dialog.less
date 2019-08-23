@@ -1,19 +1,9 @@
-:root {
-    --contentBg: #FFF;
-    --border: #E5E5E5;
-    --color: #232323;
-    --main: #F44336;
-    --dialogHeaderBg: #292929;
-    --colorDialogHeader: #FFF;
-
-    @media (prefers-color-scheme: dark) {
-        &:root {
-            --contentBg: #292929;
-            --border: #191919;
-            --color: #FFF;
-        }
-    }
-}
+@contentBg: #FFF;
+@border: #E5E5E5;
+@color: #232323;
+@main: #F44336;
+@dialogHeaderBg: #292929;
+@colorDialogHeader: #FFF;
 
 .base-mixin() {
     border-width: 0;
@@ -51,19 +41,19 @@
         min-height: 0;
         max-height: 100%;
         overflow: auto;
-        background-color: var(--contentBg);
+        background-color: @contentBg;
         font-size: 16px;
         .base-mixin();
 
         .shiori-ext-dialog-header {
             .base-mixin();
             padding: 16px;
-            color: var(--colorDialogHeader);
-            background-color: var(--dialogHeaderBg);
+            color: @colorDialogHeader;
+            background-color: @dialogHeaderBg;
             font-weight: 600;
             font-size: 1em;
             text-transform: uppercase;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid @border;
         }
 
         .shiori-ext-dialog-body {
@@ -79,21 +69,21 @@
             display: flex;
             flex-flow: row wrap;
             justify-content: flex-end;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid @border;
 
             >a {
                 .base-mixin();
                 padding: 0 8px;
                 font-size: 0.9em;
                 font-weight: 600;
-                color: var(--color);
+                color: @color;
                 text-transform: uppercase;
                 cursor: pointer;
 
                 &:hover,
                 &:focus {
                     outline: none;
-                    color: var(--main);
+                    color: @main;
                 }
             }
         }
