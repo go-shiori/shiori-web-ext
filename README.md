@@ -3,13 +3,13 @@
 [![Donate](https://img.shields.io/badge/donate-PayPal-green.svg)](https://www.paypal.me/RadhiFadlillah)
 [![Donate](https://img.shields.io/badge/donate-Ko--fi-brightgreen)](https://ko-fi.com/radhifadlillah)
 
-Shiori Web Extension is a simple extension for managing bookmarks using Shiori. This extension is intended to integaret Shiori with yoour favorite web browser. This way, you can save and remove bookmarks in Shiori without switching from your current page.
+Shiori Web Extension is a simple extension for managing bookmarks using Shiori. This extension is intended to integrate Shiori with your favorite web browser. This way, you can save and remove bookmarks in Shiori without switching from your current page.
 
 ![Screenshot](https://raw.githubusercontent.com/go-shiori/shiori-web-ext/master/docs/screenshot.png)
 
 ## Development Status
 
-This extension is still in beta, however it's already usable at this point. Unfortunately, I've only tested it in Firefox 59+ so there are no guarantee that it will work in another browser.
+This extension is still in beta, however it's already usable at this point. Unfortunately, I've only tested it in Firefox 59+ so there is no guarantee that it will work in another browser.
 
 ## Installation
 
@@ -27,7 +27,7 @@ Next click `Preferences` tab then specify server, username and password :
 
 ![Options page, preferences tab](https://raw.githubusercontent.com/go-shiori/shiori-web-ext/master/docs/options-2.png)
 
-Once finished, click login button. If all goes well, it will shows the currently active session and the extension is ready to use.
+Once finished, click login button. If all goes well, it will show the currently active session and the extension is ready to use.
 
 ## License
 
