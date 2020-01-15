@@ -69,3 +69,11 @@ btnSave.addEventListener("click", (e) => {
         .catch(err => showError(err))
         .finally(() => window.close());
 });
+
+inputTags.addEventListener("keyup", (e) => {
+    // keyCode 13 = "Enter" key on the keyboard
+    if (event.keyCode === 13) {
+        event.preventDefault()
+        btnSave.click()
+    }
+})
