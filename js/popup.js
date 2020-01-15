@@ -47,7 +47,7 @@ btnSave.addEventListener("click", (e) => {
     var tags = inputTags.value
         .toLowerCase()
         .replace(/\s+/g, " ")
-        .split(/\s*,\s*/g)
+        .split(/\s* \s*/g)
         .filter(tag => tag.trim() !== "")
         .map(tag => {
             return {
