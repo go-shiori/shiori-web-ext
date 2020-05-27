@@ -219,12 +219,22 @@ async function saveBookmark(tags) {
 
 async function updateIcon() {
     // Set initial icon
-    var runtimeUrl = await browser.runtime.getURL("/"),
-        icon = {path: {
-            16: "icons/action-default-16.png",
-            32: "icons/action-default-32.png",
-            64: "icons/action-default-64.png"
-        }};
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        accent = {path: {
+            16: "icons/action-light-16.png",
+            32: "icons/action-light-32.png",
+            64: "icons/action-light-64.png"
+        }}
+    } else {
+        accent = {path: {
+            16: "icons/action-dark-16.png",
+            32: "icons/action-dark-32.png",
+            64: "icons/action-dark-64.png"
+        }}
+    }
+
+    var runtimeUrl = await browser.runtime.getURL("/"), 
+        icon = accent;
     
     // Firefox allows using empty object as default icon.
     // This way, Firefox will use default_icon that defined in manifest.json
