@@ -29,8 +29,6 @@ jobs:
   call-build:
     needs: tag-release
     uses: ./.github/workflows/_webext-build.yml
-    with:
-      tag: ${{ github.event.inputs.version }}
 
   call-release:
     needs: call-build

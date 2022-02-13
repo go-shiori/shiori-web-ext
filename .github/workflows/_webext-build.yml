@@ -1,12 +1,6 @@
 name: 'Build Extension'
 
-on:
-  workflow_call:
-    inputs:
-      tag:
-        required: true
-        type: string
-
+on: workflow_call
 
 jobs:
   build:
@@ -23,6 +17,20 @@ jobs:
           cmd: build
           source: .
           filename: "{name}-{version}.zip"
+
+      - name: "web-ext sign"
+        id: web-ext-sign
+        uses: kewisch/action-web-ext@v1
+        with:
+          cmd: sign
+          source: ${{ steps.web-ext-build.outputs.target }}
+          channel: unlisted
+          apiKey: ${{ secrets.AMO_SIGN_KEY }}
+          apiSecret: ${{ secrets.AMO_SIGN_SECRET }}
+          timeout: 900000
+
+      - name: Move signed to dist
+        run: mv *.xpi ./dist/
 
       - name: "Upload Artifact"
         uses: actions/upload-artifact@master
