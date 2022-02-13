@@ -1,0 +1,12 @@
+name: 'Tag'
+
+on:
+  push:
+    tags: v*
+
+jobs:
+  call-build:
+    uses: ./.github/workflows/_webext-build.yml
+  call-release:
+    needs: call-build
+    uses: ./.github/workflows/_release.yml
