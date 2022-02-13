@@ -1,6 +1,11 @@
 name: "Release"
 
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
 
 jobs:
   sign:
@@ -10,6 +15,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: dist
+          path: dist
 
       - name: "Create Release"
         uses: softprops/action-gh-release@v1
@@ -17,3 +23,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: ./dist/*
+          tag_name: ${{ inputs.tag }}

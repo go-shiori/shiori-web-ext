@@ -1,6 +1,13 @@
 name: 'Build Extension'
 
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+
+
 jobs:
   build:
     name: "Build"
@@ -15,10 +22,10 @@ jobs:
         with:
           cmd: build
           source: .
-          filename: "{name}-{version}.xpi"
+          filename: "{name}-{version}.zip"
 
       - name: "Upload Artifact"
         uses: actions/upload-artifact@master
         with:
-          name: "{name}-{version}.zip"
+          name: dist
           path: ${{ steps.web-ext-build.outputs.target }}

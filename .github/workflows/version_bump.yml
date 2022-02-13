@@ -25,3 +25,15 @@ jobs:
           git config user.name "shiori"
           git tag -a ${{ github.event.inputs.version }} -m "tag release ${{ github.event.inputs.version }}"
           git push --follow-tags
+
+  call-build:
+    needs: tag-release
+    uses: ./.github/workflows/_webext-build.yml
+    with:
+      tag: ${{ github.event.inputs.version }}
+
+  call-release:
+    needs: call-build
+    uses: ./.github/workflows/_release.yml
+    with:
+      tag: ${{ github.event.inputs.version }}

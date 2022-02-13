@@ -1,12 +1,25 @@
 name: 'Tag'
 
 on:
+  workflow_call:
   push:
-    tags: v*
+    tags:
+    - v*
 
 jobs:
+  get-version:
+    steps:
+      - name: get version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
   call-build:
     uses: ./.github/workflows/_webext-build.yml
+    with:
+      tag: ${{ steps.get-version.outputs.VERSION }}
+
   call-release:
     needs: call-build
     uses: ./.github/workflows/_release.yml
+    with:
+      tag: ${{ steps.get-version.outputs.VERSION }}
