@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "version": "0.8.4",
+    "version": "0.8.5",
     "name": "Shiori",
-    "author": "Radhi Fadlillah",
+    "author": "Go-Shiori Team",
     "description": "Web extension for Shiori, a simple bookmark manager.",
     "homepage_url": "https://github.com/go-shiori/shiori-web-ext",
     "icons": {
