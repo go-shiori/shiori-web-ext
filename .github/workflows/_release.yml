@@ -1,0 +1,26 @@
+name: "Release"
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+
+jobs:
+  sign:
+    name: "Release"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist
+
+      - name: "Create Release"
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: ./dist/*
+          tag_name: ${{ inputs.tag }}

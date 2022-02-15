@@ -1,0 +1,46 @@
+name: 'Autorelease'
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  tag-release:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      VERSION: ${{ steps.get_version.outputs.VERSION }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: master
+
+      - name: get version
+        id: get_version
+        run: echo ::set-output name=VERSION::v$(cat manifest.json | jq -r .version)
+
+      - name: Tag release
+        run: |
+          git config user.email "go-shiori@users.noreply.github.com"
+          git config user.name "shiori"
+          git tag -a ${{ steps.get_version.outputs.VERSION }} -m "tag release ${{ steps.get_version.outputs.VERSION }}"
+          git push --follow-tags
+
+  call-build:
+    needs: tag-release
+    uses: ./.github/workflows/_webext-build.yml
+    secrets:
+      signKey: ${{ secrets.AMO_SIGN_KEY }}
+      signSecret: ${{ secrets.AMO_SIGN_SECRET }}
+
+  call-release:
+    needs:
+    - tag-release
+    - call-build
+    uses: ./.github/workflows/_release.yml
+    with:
+      tag: ${{ needs.tag-release.outputs.VERSION }}
