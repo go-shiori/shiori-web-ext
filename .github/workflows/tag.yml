@@ -1,7 +1,6 @@
 name: 'Tag'
 
 on:
-  workflow_call:
   push:
     tags:
     - v*
@@ -15,8 +14,9 @@ jobs:
 
   call-build:
     uses: ./.github/workflows/_webext-build.yml
-    with:
-      tag: ${{ steps.get-version.outputs.VERSION }}
+    secrets:
+      signKey: ${{ secrets.AMO_SIGN_KEY }}
+      signSecret: ${{ secrets.AMO_SIGN_SECRET }}
 
   call-release:
     needs: call-build

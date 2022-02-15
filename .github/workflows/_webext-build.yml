@@ -1,6 +1,12 @@
 name: 'Build Extension'
 
-on: workflow_call
+on:
+  workflow_call:
+    secrets:
+      signKey:
+        required: true
+      signSecret:
+        required: true
 
 jobs:
   build:
@@ -25,8 +31,8 @@ jobs:
           cmd: sign
           source: ${{ steps.web-ext-build.outputs.target }}
           channel: unlisted
-          apiKey: ${{ secrets.AMO_SIGN_KEY }}
-          apiSecret: ${{ secrets.AMO_SIGN_SECRET }}
+          apiKey: ${{ secrets.signKey }}
+          apiSecret: ${{ secrets.signSecret }}
           timeout: 900000
 
       - name: Move signed to dist
