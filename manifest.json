@@ -63,6 +63,15 @@
         }]
     },
 
+    "commands": {
+        "_execute_browser_action": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+F"
+            },
+            "description": "Show bookmark popup"
+        }
+    },
+
     "browser_specific_settings": {
         "gecko": {
             "id": "{8547b985-a7a0-408d-82d1-d185f8be1ff5}"
