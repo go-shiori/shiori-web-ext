@@ -35,11 +35,8 @@ jobs:
           apiSecret: ${{ secrets.signSecret }}
           timeout: 900000
 
-      - name: Move signed to dist
-        run: mv *.xpi ./dist/
-
       - name: "Upload Artifact"
         uses: actions/upload-artifact@master
         with:
           name: dist
-          path: ${{ steps.web-ext-build.outputs.target }}
+          path: web-ext-artifacts

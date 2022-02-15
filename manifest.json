@@ -61,5 +61,11 @@
             "light": "icons/action-light-64.png",
             "size": 64
         }]
+    },
+
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "{8547b985-a7a0-408d-82d1-d185f8be1ff5}"
+        }
     }
 }
