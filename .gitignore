@@ -1,3 +1,5 @@
 .vscode
 /*.zip
 /*.xpi
+dist
+web-ext-artifacts

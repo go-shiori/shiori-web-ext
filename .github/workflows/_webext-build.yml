@@ -1,0 +1,42 @@
+name: 'Build Extension'
+
+on:
+  workflow_call:
+    secrets:
+      signKey:
+        required: true
+      signSecret:
+        required: true
+
+jobs:
+  build:
+    name: "Build"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v1
+
+      - name: "web-ext build"
+        id: web-ext-build
+        uses: kewisch/action-web-ext@v1
+        with:
+          cmd: build
+          source: .
+          filename: "{name}-{version}.zip"
+
+      - name: "web-ext sign"
+        id: web-ext-sign
+        uses: kewisch/action-web-ext@v1
+        with:
+          cmd: sign
+          source: ${{ steps.web-ext-build.outputs.target }}
+          channel: unlisted
+          apiKey: ${{ secrets.signKey }}
+          apiSecret: ${{ secrets.signSecret }}
+          timeout: 900000
+
+      - name: "Upload Artifact"
+        uses: actions/upload-artifact@master
+        with:
+          name: dist
+          path: web-ext-artifacts

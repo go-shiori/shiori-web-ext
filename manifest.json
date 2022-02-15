@@ -38,7 +38,7 @@
         "browser_style": true,
         "chrome_style": true
     },
-    
+
     "browser_action": {
         "browser_style": true,
         "default_title": "Shiori",
@@ -65,8 +65,7 @@
 
     "browser_specific_settings": {
         "gecko": {
-            "id": "{c6e8bd66-ebb4-4b63-bd29-5ef59c795901}",
-            "update_url": "https://raw.githubusercontent.com/go-shiori/shiori-web-ext/master/updates.json"
+            "id": "{8547b985-a7a0-408d-82d1-d185f8be1ff5}"
         }
     }
 }
