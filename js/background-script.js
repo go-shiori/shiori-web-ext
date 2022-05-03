@@ -149,7 +149,13 @@ async function removeBookmark() {
     // Create API URL
     var apiURL = "";
     try {
-        apiURL = new URL("/api/bookmarks/ext", config.server);
+        var api = new URL(config.server);
+        if (api.pathname.slice(-1) == "/") {
+            api.pathname = api.pathname + "api/bookmarks/ext";
+        } else {
+            api.pathname = api.pathname + "/api/bookmarks/ext";
+        }
+        apiURL = api.toString();
     } catch(err) {
         throw new Error(`${config.server} is not a valid url`);
     }
@@ -184,7 +190,13 @@ async function saveBookmark(tags) {
     // Create API URL
     var apiURL = "";
     try {
-        apiURL = new URL("/api/bookmarks/ext", config.server);
+        var api = new URL(config.server);
+        if (api.pathname.slice(-1) == "/") {
+            api.pathname = api.pathname + "api/bookmarks/ext";
+        } else {
+            api.pathname = api.pathname + "/api/bookmarks/ext";
+        }
+        apiURL = api.toString();
     } catch(err) {
         throw new Error(`${config.server} is not a valid url`);
     }
