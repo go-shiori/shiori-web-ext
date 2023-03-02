@@ -7,6 +7,7 @@ async function getExtensionConfig() {
         session: items.session || "",
         username: items.username || "",
         password: items.password || "",
+        remember: items.remember || false,
     };
 }
 
@@ -52,7 +53,7 @@ async function logout(server, session) {
     return Promise.resolve();
 }
 
-async function login(server, username, password) {
+async function login(server, username, password, remember) {
     // Validate input
     if (server === "") {
         throw new Error("Server must not empty");
@@ -64,6 +65,10 @@ async function login(server, username, password) {
 
     if (password === "") {
         throw new Error("Password must not empty");
+    }
+
+    if (typeof remember !== 'boolean') {
+        remember = false;
     }
 
     // Create login URL
@@ -85,6 +90,7 @@ async function login(server, username, password) {
         body: JSON.stringify({
             username: username,
             password: password,
+            remember: remember,
         }),
         headers: {
             "Content-Type": "application/json",
@@ -108,6 +114,7 @@ var errorMessage = document.getElementById("error-message"),
     inputServer = document.getElementById("input-server"),
     inputUsername = document.getElementById("input-username"),
     inputPassword = document.getElementById("input-password"),
+    inputRemember = document.getElementById("input-remember"),
     btnLogin = document.getElementById("btn-login"),
     loadingSign = document.getElementById("loading-sign"),
     config = {};
@@ -141,6 +148,7 @@ getExtensionConfig()
         inputServer.value = cfg.server;
         inputUsername.value = cfg.username;
         inputPassword.value = cfg.password;
+        inputRemember.checked = cfg.remember;
     })
     .catch(err => showError(err));
 
@@ -150,18 +158,20 @@ async function btnLoginClick() {
     var server = inputServer.value,
         username = inputUsername.value,
         password = inputPassword.value;
+        remember = inputRemember.checked;
 
     // Make sure to log out first
     await logout(server, config.session);
     
     // Login using input value
-    var newSession = await login(server, username, password);
+    var newSession = await login(server, username, password, remember);
 
     // Save input value and session to config
     config.server = server;
     config.session = newSession;
     config.username = username;
     config.password = password;
+    config.remember = remember;
     await saveExtensionConfig(config);
     txtSession.textContent = `Active session: ${newSession}`;
 
