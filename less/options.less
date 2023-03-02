@@ -62,7 +62,11 @@ body {
         color: var(--color);
     }
 
-    >input {
+    label[for=remember] {
+        grid-column: 2;
+    }
+
+    >input:not([type=checkbox]) {
         color: var(--color);
         padding: 8px;
         background-color: var(--contentBg);
