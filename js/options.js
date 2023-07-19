@@ -73,12 +73,13 @@ async function login(server, username, password, remember) {
 
     // Create login URL
     var loginURL = "";
+    var loginPath = "api/v1/auth/login";
     try {
         loginURL = new URL(server);
         if (loginURL.pathname.slice(-1) == "/") {
-            loginURL.pathname = loginURL.pathname + "api/login";
+            loginURL.pathname = loginURL.pathname + loginPath;
         } else {
-            loginURL.pathname = loginURL.pathname + "/api/login";
+            loginURL.pathname = loginURL.pathname + "/" + loginPath;
         }
     } catch(err) {
         throw new Error(`${server} is not a valid url`);
@@ -90,7 +91,7 @@ async function login(server, username, password, remember) {
         body: JSON.stringify({
             username: username,
             password: password,
-            remember: remember,
+            remember_me: remember,
         }),
         headers: {
             "Content-Type": "application/json",
@@ -103,7 +104,7 @@ async function login(server, username, password, remember) {
     }
 
     var jsonResp = await response.json(),
-        session = jsonResp.session;
+        session = jsonResp.message.session;
 
     return session;
 }
@@ -162,7 +163,7 @@ async function btnLoginClick() {
 
     // Make sure to log out first
     await logout(server, config.session);
-    
+
     // Login using input value
     var newSession = await login(server, username, password, remember);
 
