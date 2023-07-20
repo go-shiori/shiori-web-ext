@@ -4,7 +4,7 @@ async function getExtensionConfig() {
 
     return {
         server: items.server || "",
-        session: items.session || "",
+        token: items.token || "",
         username: items.username || "",
         password: items.password || "",
         remember: items.remember || false,
@@ -15,9 +15,9 @@ async function saveExtensionConfig(cfg) {
     return browser.storage.local.set(cfg);
 }
 
-async function logout(server, session) {
-    // Make sure session is exists
-    if (session === "") return Promise.resolve();
+async function logout(server, token) {
+    // Make sure token is exists
+    if (token === "") return Promise.resolve();
 
     // Validate input
     if (server === "") {
@@ -41,7 +41,7 @@ async function logout(server, session) {
     var response = await fetch(logoutURL, {
         method: "post",
         headers: {
-            "X-Session-Id": session,
+            "Authorization": `Bearer ${token}`,
         }
     });
 
@@ -104,9 +104,9 @@ async function login(server, username, password, remember) {
     }
 
     var jsonResp = await response.json(),
-        session = jsonResp.message.session;
+        token = jsonResp.message.token;
 
-    return session;
+    return token;
 }
 
 // Define function for UI handler
@@ -143,8 +143,8 @@ getExtensionConfig()
     .then(cfg => {
         config = cfg;
 
-        if (cfg.session === "") txtSession.textContent = "No active session";
-        else txtSession.textContent = `Active session: ${cfg.session}`;
+        if (cfg.token === "") txtSession.textContent = "No active session";
+        else txtSession.textContent = `Logged in.`;
 
         inputServer.value = cfg.server;
         inputUsername.value = cfg.username;
@@ -162,19 +162,19 @@ async function btnLoginClick() {
         remember = inputRemember.checked;
 
     // Make sure to log out first
-    await logout(server, config.session);
+    await logout(server, config.token);
 
     // Login using input value
-    var newSession = await login(server, username, password, remember);
+    var token = await login(server, username, password, remember);
 
-    // Save input value and session to config
+    // Save input value and token to config
     config.server = server;
-    config.session = newSession;
+    config.token = token;
     config.username = username;
     config.password = password;
     config.remember = remember;
     await saveExtensionConfig(config);
-    txtSession.textContent = `Active session: ${newSession}`;
+    txtSession.textContent = `Logged in.`;
 
     return Promise.resolve();
 }
