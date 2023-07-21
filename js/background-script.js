@@ -40,7 +40,7 @@ async function getShioriBookmarkFolder() {
     // In Firefox, its id is `unfiled_____` while in Chrome the id is `2`.
     var parentId = "",
         runtimeUrl = await browser.runtime.getURL("/");
-    
+
     if (runtimeUrl.startsWith("moz")) {
         parentId = "unfiled_____";
     } else if (runtimeUrl.startsWith("chrome")) {
@@ -117,19 +117,19 @@ async function removeLocalBookmark(url) {
 
 async function getExtensionConfig() {
     var items = await browser.storage.local.get(),
-        session = items.session || "",
+        token = items.token || "",
         server = items.server || "";
-    
-    if (session === "") {
+
+    if (token === "") {
         throw new Error("no active session, please login first");
     }
-    
+
     if (server === "") {
         throw new Error("server url is not specified");
     }
 
     return {
-        session: session,
+        token: token,
         server: server
     };
 }
@@ -166,7 +166,7 @@ async function removeBookmark() {
         body: JSON.stringify({url: tab.url}),
         headers: {
             "Content-Type": "application/json",
-            "X-Session-Id": config.session,
+            "Authorization": `Bearer ${config.token}`,
         }
     });
 
@@ -213,7 +213,7 @@ async function saveBookmark(tags) {
         body: JSON.stringify(data),
         headers: {
             "Content-Type": "application/json",
-            "X-Session-Id": config.session,
+            "Authorization": `Bearer ${config.token}`,
         }
     });
 
@@ -237,7 +237,7 @@ async function updateIcon() {
             32: "icons/action-default-32.png",
             64: "icons/action-default-64.png"
         }};
-    
+
     // Firefox allows using empty object as default icon.
     // This way, Firefox will use default_icon that defined in manifest.json
     if (runtimeUrl.startsWith("moz")) {
@@ -248,7 +248,7 @@ async function updateIcon() {
     try {
         var tab = await getCurrentTab(),
             local = await findLocalBookmark(tab.url);
-        
+
         if (local) icon.path = {
             16: "icons/action-bookmarked-16.png",
             32: "icons/action-bookmarked-32.png",
