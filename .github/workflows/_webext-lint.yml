@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "web-ext lint"
-        uses: kewisch/action-web-ext@41d7f1231e17976386937cdc01a479f7c79c3c2a
+        uses: kewisch/action-web-ext@e9d27a55a8b266d9055e27c9814b92071c5a3dd0
         with:
           cmd: lint
           source: .
