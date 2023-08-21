@@ -18,7 +18,7 @@ jobs:
 
       - name: "web-ext build"
         id: web-ext-build
-        uses: kewisch/action-web-ext@41d7f1231e17976386937cdc01a479f7c79c3c2a
+        uses: kewisch/action-web-ext@cb8a69420fea686e331e270b6581d4d289ecb2d2
         with:
           cmd: build
           source: .
@@ -26,7 +26,7 @@ jobs:
 
       - name: "web-ext sign"
         id: web-ext-sign
-        uses: kewisch/action-web-ext@41d7f1231e17976386937cdc01a479f7c79c3c2a
+        uses: kewisch/action-web-ext@cb8a69420fea686e331e270b6581d4d289ecb2d2
         with:
           cmd: sign
           source: ${{ steps.web-ext-build.outputs.target }}
