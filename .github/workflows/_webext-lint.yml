@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "web-ext lint"
         uses: kewisch/action-web-ext@41d7f1231e17976386937cdc01a479f7c79c3c2a
