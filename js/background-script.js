@@ -301,3 +301,88 @@ browser.tabs.onUpdated.addListener(updateActiveTab);
 browser.tabs.onActivated.addListener(updateActiveTab);
 browser.windows.onFocusChanged.addListener(updateActiveTab);
 updateActiveTab();
+
+if (browser.omnibox) {
+  browser.omnibox.setDefaultSuggestion({
+    description: 'Search for stored bookmarks'
+  });
+
+  browser.omnibox.onInputChanged.addListener((text, addSuggestions) => {
+    var data = text.split(" ").reduce((prev, curr) => {
+      if (curr[0] == "#") {
+        return { ...prev, tags: [...prev.tags, curr.substring(1)] }
+      }
+
+      if (curr[0] == "!") {
+        return { ...prev, excludedTags: [...prev.excludedTags, curr.substring(1)] }
+      }
+
+      return { ...prev, keyword: [prev.keyword, curr].join(" ") }
+
+    }, { tags: [], excludedTags: [], keyword: "" });
+
+    return retreiveBookmarks(data.tags, data.excludedTags, data.keyword)
+      .then(addSuggestions)
+  });
+
+  async function retreiveBookmarks(tags, excludedTags, keyword) {
+    var tagValue = tags.join(",")
+    var excludedTagValue = excludedTags.join(",")
+    var config = await getExtensionConfig();
+
+    // Create API URL
+    var apiURL = "";
+    try {
+      var api = new URL(config.server);
+      if (api.pathname.slice(-1) == "/") {
+        api.pathname = api.pathname + "api/bookmarks";
+      } else {
+        api.pathname = api.pathname + "/api/bookmarks";
+      }
+      api.searchParams.set("keyword", keyword)
+      api.searchParams.set("tags", tagValue)
+      api.searchParams.set("exclude", excludedTagValue)
+      apiURL = api.toString();
+    } catch (err) {
+      throw new Error(`${config.server} is not a valid url`);
+    }
+
+    var response = await fetch(apiURL, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Session-Id": config.session,
+      }
+    });
+
+    if (!response.ok) {
+      var err = await response.text();
+      throw new Error(err);
+    }
+
+    return response.json()
+      .then(v => {
+        return v.bookmarks.map(b => ({
+          content: b.url,
+          description: b.title
+        }))
+      }
+      );
+  }
+
+  browser.omnibox.onInputEntered.addListener((text, disposition) => {
+    let url = text;
+
+    switch (disposition) {
+      case "currentTab":
+        browser.tabs.update({ url });
+        break;
+      case "newForegroundTab":
+        browser.tabs.create({ url });
+        break;
+      case "newBackgroundTab":
+        browser.tabs.create({ url, active: false });
+        break;
+    }
+  });
+}
