@@ -230,12 +230,15 @@ async function saveBookmark(tags) {
 }
 
 async function updateIcon() {
+    // Determine the colour scheme for the icons
+    var colourScheme = getDarkModeEnabled() ? "light" : "default";
+
     // Set initial icon
     var runtimeUrl = await browser.runtime.getURL("/"),
         icon = {path: {
-            16: "icons/action-default-16.png",
-            32: "icons/action-default-32.png",
-            64: "icons/action-default-64.png"
+            16: `icons/action-${colourScheme}-16.png`,
+            32: `icons/action-${colourScheme}-32.png`,
+            64: `icons/action-${colourScheme}-64.png`
         }};
 
     // Firefox allows using empty object as default icon.
@@ -289,6 +292,11 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     return task;
 });
+
+// Check if dark mode is enabled
+function getDarkModeEnabled() {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches || false;
+}
 
 // Add handler for icon change
 function updateActiveTab()  {
