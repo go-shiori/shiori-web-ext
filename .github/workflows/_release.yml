@@ -15,7 +15,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: dist
-          path: dist
+          path: web-ext-artifacts
 
       - name: "Create Release"
         uses: softprops/action-gh-release@v1

@@ -7,6 +7,12 @@ Shiori Web Extension is a simple extension for managing bookmarks using Shiori. 
 
 ![Screenshot](https://raw.githubusercontent.com/go-shiori/shiori-web-ext/master/docs/screenshot.png)
 
+## Versioning
+
+This project now follows the same versioning system that Shiori uses, that means that starting on `v1.6.0` the extension will match the supported version of the server. This is to avoid confusion and to make it easier to know which version of the extension is compatible with your server.
+
+Different releases for the same server version will be appended as the extension version, for example, `v1.6.0.1` is the first release of the extension for Shiori `v1.6.0`.
+
 ## Development Status
 
 This extension is still in beta, however it's already usable at this point. Unfortunately, I've only tested it in Firefox 59+ so there is no guarantee that it will work in another browser.
@@ -17,7 +23,7 @@ Download the extension from release page then install it in your favorite browse
 
 ## Initial Setup
 
-Before using the web extension, we need to specify the server, username and password to access our Shiori instance. To do so, you can specify it in extension options page. 
+Before using the web extension, we need to specify the server, username and password to access our Shiori instance. To do so, you can specify it in extension options page.
 
 In Firefox, open add-ons page (`about:addons`) then choose Shiori Web Extension :
 
