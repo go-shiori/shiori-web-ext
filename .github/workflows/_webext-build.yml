@@ -30,7 +30,7 @@ jobs:
         with:
           cmd: sign
           source: ${{ steps.web-ext-build.outputs.target }}
-          channel: unlisted
+          channel: listed
           apiKey: ${{ secrets.signKey }}
           apiSecret: ${{ secrets.signSecret }}
           timeout: 900000
