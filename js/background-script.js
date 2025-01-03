@@ -1,24 +1,19 @@
 async function getCurrentTab() {
-    // Get active tabs in current window
-    var tabs = await browser.tabs.query({
+    const tabs = await browser.tabs.query({
         currentWindow: true,
         active: true,
     });
 
     if (tabs.length < 1) {
-        throw new Error("no tab available");
+        throw new Error("No tab available");
     }
 
-    // Make sure URL protocol supported
-    var supportedProtocols = ["https:", "http:", "ftp:", "file:"],
-        activeTab = tabs[0],
-        url = document.createElement('a');
+    const supportedProtocols = ["https:", "http:", "ftp:", "file:"];
+    const activeTab = tabs[0];
+    const url = new URL(activeTab.url);
 
-    if (activeTab.url !== "") {
-        url.href = activeTab.url;
-        if (supportedProtocols.indexOf(url.protocol) === -1) {
-            throw new Error(`protocol "${url.protocol}" is not supported`);
-        }
+    if (!supportedProtocols.includes(url.protocol)) {
+        throw new Error(`Protocol "${url.protocol}" is not supported`);
     }
 
     return activeTab;
@@ -26,7 +21,7 @@ async function getCurrentTab() {
 
 async function getPageContent(tab) {
     try {
-        var content = await browser.tabs.sendMessage(tab.id, {type: "page-content"});
+        const content = await browser.tabs.sendMessage(tab.id, { type: "page-content" });
         return content;
     } catch {
         return {};
@@ -34,29 +29,24 @@ async function getPageContent(tab) {
 }
 
 async function getShioriBookmarkFolder() {
-    // TODO:
-    // I'm not sure it's the most efficient way, but it's the simplest.
-    // We want to put Shiori folder in `Other bookmarks`, which id different depending on browser.
-    // In Firefox, its id is `unfiled_____` while in Chrome the id is `2`.
-    var parentId = "",
-        runtimeUrl = await browser.runtime.getURL("/");
+    const runtimeUrl = browser.runtime.getURL("/");
+    let parentId;
 
     if (runtimeUrl.startsWith("moz")) {
         parentId = "unfiled_____";
     } else if (runtimeUrl.startsWith("chrome")) {
         parentId = "2";
     } else {
-        throw new Error("right now extension only support firefox and chrome")
+        throw new Error("Extension only supports Firefox and Chrome");
     }
 
-    // Check if the parent folder already has Shiori folder
-    var children = await browser.bookmarks.getChildren(parentId),
-        shiori = children.find(el => el.url == null && el.title === "Shiori");
+    const children = await browser.bookmarks.getChildren(parentId);
+    let shiori = children.find((el) => !el.url && el.title === "Shiori");
 
     if (!shiori) {
         shiori = await browser.bookmarks.create({
             title: "Shiori",
-            parentId: parentId
+            parentId,
         });
     }
 
@@ -64,333 +54,146 @@ async function getShioriBookmarkFolder() {
 }
 
 async function findLocalBookmark(url) {
-    var shioriFolder = await getShioriBookmarkFolder(),
-        existingBookmarks = await browser.bookmarks.search({
-            url: url,
-        });
+    const shioriFolder = await getShioriBookmarkFolder();
+    const existingBookmarks = await browser.bookmarks.search({ url });
 
-    var idx = existingBookmarks.findIndex(book => {
-        return book.parentId === shioriFolder.id;
-    });
-
-    if (idx >= 0) {
-        return existingBookmarks[idx];
-    } else {
-        return null;
-    }
+    return existingBookmarks.find((book) => book.parentId === shioriFolder.id) || null;
 }
 
 async function saveLocalBookmark(url, title) {
-    var shioriFolder = await getShioriBookmarkFolder(),
-        existingBookmarks = await browser.bookmarks.search({
-            url: url,
-        });
+    const shioriFolder = await getShioriBookmarkFolder();
+    const existingBookmarks = await browser.bookmarks.search({ url });
 
-    var idx = existingBookmarks.findIndex(book => {
-        return book.parentId === shioriFolder.id;
-    });
-
-    if (idx === -1) {
+    if (!existingBookmarks.some((book) => book.parentId === shioriFolder.id)) {
         await browser.bookmarks.create({
-            url: url,
-            title: title,
+            url,
+            title,
             parentId: shioriFolder.id,
         });
     }
-
-    return Promise.resolve();
 }
 
 async function removeLocalBookmark(url) {
-    var shioriFolder = await getShioriBookmarkFolder(),
-        existingBookmarks = await browser.bookmarks.search({
-            url: url,
-        });
+    const shioriFolder = await getShioriBookmarkFolder();
+    const existingBookmarks = await browser.bookmarks.search({ url });
 
-    existingBookmarks.forEach(book => {
-        if (book.parentId !== shioriFolder.id) return;
-        browser.bookmarks.remove(book.id);
-    });
-
-    return Promise.resolve();
+    for (const book of existingBookmarks) {
+        if (book.parentId === shioriFolder.id) {
+            await browser.bookmarks.remove(book.id);
+        }
+    }
 }
 
 async function getExtensionConfig() {
-    var items = await browser.storage.local.get(),
-        token = items.token || "",
-        server = items.server || "";
+    const { token = "", server = "" } = await browser.storage.local.get();
 
-    if (token === "") {
-        throw new Error("no active session, please login first");
+    if (!token) {
+        throw new Error("No active session, please login first");
     }
 
-    if (server === "") {
-        throw new Error("server url is not specified");
+    if (!server) {
+        throw new Error("Server URL is not specified");
     }
 
-    return {
-        token: token,
-        server: server
-    };
+    return { token, server };
 }
 
 async function openLibraries() {
-    var config = await getExtensionConfig();
-    return browser.tabs.create({
-        active: true,
-        url: config.server,
-    });
+    const config = await getExtensionConfig();
+    return browser.tabs.create({ active: true, url: config.server });
 }
 
 async function removeBookmark() {
-    var tab = await getCurrentTab(),
-        config = await getExtensionConfig();
+    const tab = await getCurrentTab();
+    const config = await getExtensionConfig();
+    const apiURL = new URL(`${config.server}/api/bookmarks/ext`).toString();
 
-    // Create API URL
-    var apiURL = "";
-    try {
-        var api = new URL(config.server);
-        if (api.pathname.slice(-1) == "/") {
-            api.pathname = api.pathname + "api/bookmarks/ext";
-        } else {
-            api.pathname = api.pathname + "/api/bookmarks/ext";
-        }
-        apiURL = api.toString();
-    } catch(err) {
-        throw new Error(`${config.server} is not a valid url`);
-    }
-
-    // Send request via background script
-    var response = await fetch(apiURL, {
-        method: "delete",
-        body: JSON.stringify({url: tab.url}),
+    const response = await fetch(apiURL, {
+        method: "DELETE",
+        body: JSON.stringify({ url: tab.url }),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${config.token}`,
-        }
+            Authorization: `Bearer ${config.token}`,
+        },
     });
 
     if (!response.ok) {
-        var err = await response.text();
-        throw new Error(err);
+        throw new Error(await response.text());
     }
 
-    // Remove local bookmark
     await removeLocalBookmark(tab.url);
-
-    return Promise.resolve();
 }
 
 async function saveBookmark(tags) {
-    // Get value from async function
-    var tab = await getCurrentTab(),
-        config = await getExtensionConfig(),
-        content = await getPageContent(tab);
+    const tab = await getCurrentTab();
+    const config = await getExtensionConfig();
+    const content = await getPageContent(tab);
+    const apiURL = new URL(`${config.server}/api/bookmarks/ext`).toString();
 
-    // Create API URL
-    var apiURL = "";
-    try {
-        var api = new URL(config.server);
-        if (api.pathname.slice(-1) == "/") {
-            api.pathname = api.pathname + "api/bookmarks/ext";
-        } else {
-            api.pathname = api.pathname + "/api/bookmarks/ext";
-        }
-        apiURL = api.toString();
-    } catch(err) {
-        throw new Error(`${config.server} is not a valid url`);
-    }
-
-    // Send request via background script
-    var data = {
-        url: tab.url,
-        tags: tags,
-        html: content.html || "",
-    }
-
-    var response = await fetch(apiURL, {
-        method: "post",
-        body: JSON.stringify(data),
+    const response = await fetch(apiURL, {
+        method: "POST",
+        body: JSON.stringify({
+            url: tab.url,
+            tags,
+            html: content.html || "",
+        }),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${config.token}`,
-        }
+            Authorization: `Bearer ${config.token}`,
+        },
     });
 
     if (!response.ok) {
-        var err = await response.text();
-        throw new Error(err);
+        throw new Error(await response.text());
     }
 
-    // Save to local bookmark
-    var pageTitle = content.title || tab.title;
-    await saveLocalBookmark(tab.url, pageTitle);
-
-    return Promise.resolve();
+    await saveLocalBookmark(tab.url, content.title || tab.title);
 }
 
-async function updateIcon() {
-    // Determine the colour scheme for the icons
-    var colourScheme = getDarkModeEnabled() ? "light" : "default";
-
-    // Set initial icon
-    var runtimeUrl = await browser.runtime.getURL("/"),
-        icon = {path: {
-            16: `icons/action-${colourScheme}-16.png`,
-            32: `icons/action-${colourScheme}-32.png`,
-            64: `icons/action-${colourScheme}-64.png`
-        }};
-
-    // Firefox allows using empty object as default icon.
-    // This way, Firefox will use default_icon that defined in manifest.json
-    if (runtimeUrl.startsWith("moz")) {
-        icon = {};
-    }
-
-    // Get current active tab
-    try {
-        var tab = await getCurrentTab(),
-            local = await findLocalBookmark(tab.url);
-
-        if (local) icon.path = {
-            16: "icons/action-bookmarked-16.png",
-            32: "icons/action-bookmarked-32.png",
-            64: "icons/action-bookmarked-64.png"
-        }
-    } catch {}
-
-    return browser.browserAction.setIcon(icon);
-}
-
-// Define event handler
-browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    var task = Promise.resolve();
-
+browser.runtime.onMessage.addListener((request) => {
     switch (request.type) {
         case "open-libraries":
-            task = new Promise((resolve, reject) => {
-                openLibraries()
-                    .then(() => { resolve() })
-                    .catch(err => { reject(err) });
-            });
-            break;
+            return openLibraries();
         case "remove-bookmark":
-            task = new Promise((resolve, reject) => {
-                removeBookmark()
-                    .then(() => { resolve() })
-                    .catch(err => { reject(err) });
-            });
-            break;
+            return removeBookmark();
         case "save-bookmark":
-            task = new Promise((resolve, reject) => {
-                saveBookmark(request.tags)
-                    .then(() => { resolve() })
-                    .catch(err => { reject(err) });
-            });
-            break;
+            return saveBookmark(request.tags);
+        default:
+            return Promise.resolve();
     }
-
-    return task;
 });
 
-// Check if dark mode is enabled
-function getDarkModeEnabled() {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches || false;
-}
+browser.tabs.onActivated.addListener(() => updateIcon());
+browser.tabs.onUpdated.addListener(() => updateIcon());
+browser.bookmarks.onCreated.addListener(() => updateIcon());
+browser.bookmarks.onRemoved.addListener(() => updateIcon());
+browser.windows.onFocusChanged.addListener(() => updateIcon());
 
-// Add handler for icon change
-function updateActiveTab()  {
-    updateIcon().catch(err => console.error(err.message));
-}
-
-browser.bookmarks.onCreated.addListener(updateActiveTab);
-browser.bookmarks.onRemoved.addListener(updateActiveTab);
-browser.tabs.onUpdated.addListener(updateActiveTab);
-browser.tabs.onActivated.addListener(updateActiveTab);
-browser.windows.onFocusChanged.addListener(updateActiveTab);
-updateActiveTab();
-
-if (browser.omnibox) {
-  browser.omnibox.setDefaultSuggestion({
-    description: 'Search for stored bookmarks'
-  });
-
-  browser.omnibox.onInputChanged.addListener((text, addSuggestions) => {
-    var data = text.split(" ").reduce((prev, curr) => {
-      if (curr[0] == "#") {
-        return { ...prev, tags: [...prev.tags, curr.substring(1)] }
-      }
-
-      if (curr[0] == "!") {
-        return { ...prev, excludedTags: [...prev.excludedTags, curr.substring(1)] }
-      }
-
-      return { ...prev, keyword: [prev.keyword, curr].join(" ") }
-
-    }, { tags: [], excludedTags: [], keyword: "" });
-
-    return retreiveBookmarks(data.tags, data.excludedTags, data.keyword)
-      .then(addSuggestions)
-  });
-
-  async function retreiveBookmarks(tags, excludedTags, keyword) {
-    var tagValue = tags.join(",")
-    var excludedTagValue = excludedTags.join(",")
-    var config = await getExtensionConfig();
-
-    // Create API URL
-    var apiURL = "";
+async function updateIcon() {
     try {
-      var api = new URL(config.server);
-      if (api.pathname.slice(-1) == "/") {
-        api.pathname = api.pathname + "api/bookmarks";
-      } else {
-        api.pathname = api.pathname + "/api/bookmarks";
-      }
-      api.searchParams.set("keyword", keyword)
-      api.searchParams.set("tags", tagValue)
-      api.searchParams.set("exclude", excludedTagValue)
-      apiURL = api.toString();
-    } catch (err) {
-      throw new Error(`${config.server} is not a valid url`);
+        const tab = await getCurrentTab();
+        const isBookmarked = !!(await findLocalBookmark(tab.url));
+
+        browser.action.setIcon({
+            path: isBookmarked
+                ? {
+                      16: "icons/action-bookmarked-16.png",
+                      32: "icons/action-bookmarked-32.png",
+                      64: "icons/action-bookmarked-64.png",
+                  }
+                : {
+                      16: "icons/action-default-16.png",
+                      32: "icons/action-default-32.png",
+                      64: "icons/action-default-64.png",
+                  },
+        });
+    } catch {
+        browser.action.setIcon({
+            path: {
+                16: "icons/action-default-16.png",
+                32: "icons/action-default-32.png",
+                64: "icons/action-default-64.png",
+            },
+        });
     }
-
-    var response = await fetch(apiURL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Session-Id": config.session,
-      }
-    });
-
-    if (!response.ok) {
-      var err = await response.text();
-      throw new Error(err);
-    }
-
-    return response.json()
-      .then(v => {
-        return v.bookmarks.map(b => ({
-          content: b.url,
-          description: b.title
-        }))
-      }
-      );
-  }
-
-  browser.omnibox.onInputEntered.addListener((text, disposition) => {
-    let url = text;
-
-    switch (disposition) {
-      case "currentTab":
-        browser.tabs.update({ url });
-        break;
-      case "newForegroundTab":
-        browser.tabs.create({ url });
-        break;
-      case "newBackgroundTab":
-        browser.tabs.create({ url, active: false });
-        break;
-    }
-  });
 }
