@@ -1,5 +1,5 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "version": "1.6.0.1",
     "name": "Shiori",
     "author": "Go-Shiori Team",
@@ -9,21 +9,20 @@
         "48": "icons/icon-48.png",
         "96": "icons/icon-96.png"
     },
-
     "permissions": [
-        "<all_urls>",
         "tabs",
         "storage",
-        "bookmarks"
+        "bookmarks",
+        "scripting",
+        "activeTab"
     ],
-
+    "host_permissions": ["<all_urls>"],
     "background": {
         "scripts": [
-            "js/browser-polyfill.js",
-            "js/background-script.js"
+          "js/browser-polyfill.js",
+          "js/background-script.js"
         ]
     },
-
     "content_scripts": [{
         "matches": ["<all_urls>"],
         "css": ["css/dialog.css"],
@@ -32,53 +31,33 @@
             "js/content-script.js"
         ]
     }],
-
     "options_ui": {
         "page": "view/options.html",
-        "browser_style": true,
-        "chrome_style": true
+        "open_in_tab": false
     },
-
-    "browser_action": {
-        "browser_style": true,
+    "action": {
         "default_title": "Shiori",
         "default_popup": "view/popup.html",
         "default_icon": {
             "16": "icons/action-default-16.png",
             "32": "icons/action-default-32.png",
             "64": "icons/action-default-64.png"
-        },
-        "theme_icons": [{
-            "dark": "icons/action-dark-16.png",
-            "light": "icons/action-light-16.png",
-            "size": 16
-        }, {
-            "dark": "icons/action-dark-32.png",
-            "light": "icons/action-light-32.png",
-            "size": 32
-        }, {
-            "dark": "icons/action-dark-64.png",
-            "light": "icons/action-light-64.png",
-            "size": 64
-        }]
+        }
     },
-
     "commands": {
-        "_execute_browser_action": {
+        "_execute_action": {
             "suggested_key": {
                 "default": "Ctrl+Shift+F"
             },
             "description": "Show bookmark popup"
         }
     },
-
     "browser_specific_settings": {
         "gecko": {
             "id": "{8547b985-a7a0-408d-82d1-d185f8be1ff5}"
         }
     },
-
     "omnibox": {
-      "keyword": "@shiori"
+        "keyword": "@shiori"
     }
 }
