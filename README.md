@@ -14,7 +14,7 @@ Different releases for the same server version will be appended as the extension
 
 ## Development Status
 
-This extension is still in beta, however it's already usable at this point. Unfortunately, I've only tested it in Firefox 59+ so there is no guarantee that it will work in another browser.
+This extension is still in beta, however it's already usable at this point. Unfortunately, I've only tested it in Firefox 59+ so there is no guarantee that it will work in another browser. A work-in-progress containing build pipeline for MacOS Mojave, specifically Safari, is currently in progress - more details in [Safari Building documentation](/docs/Safari.md).
 
 ## Installation
 
