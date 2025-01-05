@@ -106,7 +106,9 @@ async function openLibraries() {
 async function removeBookmark() {
     const tab = await getCurrentTab();
     const config = await getExtensionConfig();
-    const apiURL = new URL(`${config.server}/api/bookmarks/ext`).toString();
+    const srvURL = new URL(config.server);
+    srvURL.pathname = srvURL.pathname.replace(/\/+$/, '') + '/';
+    const apiURL = new URL(`${srvURL}api/bookmarks/ext`).toString();
 
     const response = await fetch(apiURL, {
         method: "DELETE",
@@ -128,7 +130,9 @@ async function saveBookmark(tags) {
     const tab = await getCurrentTab();
     const config = await getExtensionConfig();
     const content = await getPageContent(tab);
-    const apiURL = new URL(`${config.server}/api/bookmarks/ext`).toString();
+    const srvURL = new URL(config.server);
+    srvURL.pathname = srvURL.pathname.replace(/\/+$/, '') + '/';
+    const apiURL = new URL(`${srvURL}api/bookmarks/ext`).toString();
 
     const response = await fetch(apiURL, {
         method: "POST",
