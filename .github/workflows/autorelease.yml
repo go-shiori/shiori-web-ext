@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
   workflow_call:
   push:
-    branches: ["master"]
-    tags: ["v*"]
+    tags:
+      - 'v*'
 
 concurrency:
   group: ci-autorelease-${{ github.ref }}-1
