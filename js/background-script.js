@@ -173,31 +173,42 @@ browser.bookmarks.onCreated.addListener(() => updateIcon());
 browser.bookmarks.onRemoved.addListener(() => updateIcon());
 browser.windows.onFocusChanged.addListener(() => updateIcon());
 
+const bookmarkedIcon = {
+    16: "icons/action-bookmarked-16.png",
+    32: "icons/action-bookmarked-32.png",
+    64: "icons/action-bookmarked-64.png",
+}
+
+const lightModeIcon = {
+    16: "icons/action-default-16.png",
+    32: "icons/action-default-32.png",
+    64: "icons/action-default-64.png",
+}
+
+const darkModeIcon = {
+    16: "icons/action-default-dark-16.png",
+    32: "icons/action-default-dark-32.png",
+    64: "icons/action-default-dark-64.png",
+}
+
 async function updateIcon() {
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const defaultIcon = isDarkMode ? darkModeIcon : lightModeIcon;
     try {
+
         const tab = await getCurrentTab();
         const isBookmarked = !!(await findLocalBookmark(tab.url));
 
         browser.action.setIcon({
             path: isBookmarked
-                ? {
-                      16: "icons/action-bookmarked-16.png",
-                      32: "icons/action-bookmarked-32.png",
-                      64: "icons/action-bookmarked-64.png",
-                  }
-                : {
-                      16: "icons/action-default-16.png",
-                      32: "icons/action-default-32.png",
-                      64: "icons/action-default-64.png",
-                  },
+                ? bookmarkedIcon
+                : defaultIcon,
         });
     } catch {
         browser.action.setIcon({
-            path: {
-                16: "icons/action-default-16.png",
-                32: "icons/action-default-32.png",
-                64: "icons/action-default-64.png",
-            },
+            path: defaultIcon,
         });
     }
 }
+browser.runtime.onStartup.addListener(updateIcon);
+browser.runtime.onInstalled.addListener(updateIcon);
