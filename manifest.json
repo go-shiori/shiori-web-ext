@@ -9,6 +9,9 @@
         "48": "icons/icon-48.png",
         "96": "icons/icon-96.png"
     },
+    "content_security_policy": {
+        "extension_pages": "default-src 'self'; connect-src 'self' http: https:; style-src 'self' 'unsafe-inline';"
+    },
     "permissions": [
         "tabs",
         "storage",
