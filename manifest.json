@@ -1,5 +1,5 @@
 {
-    "manifest_version": 3,
+    "manifest_version": 2,
     "version": "1.7.4.0",
     "name": "Shiori",
     "author": "Go-Shiori Team",
@@ -9,9 +9,7 @@
         "48": "icons/icon-48.png",
         "96": "icons/icon-96.png"
     },
-    "content_security_policy": {
-        "extension_pages": "default-src 'self'; connect-src 'self' http: https:; style-src 'self' 'unsafe-inline';"
-    },
+    "content_security_policy": "default-src 'self'; connect-src 'self' http: https:; style-src 'self' 'unsafe-inline';",
     "permissions": [
         "tabs",
         "storage",
@@ -19,7 +17,6 @@
         "scripting",
         "activeTab"
     ],
-    "host_permissions": ["<all_urls>"],
     "background": {
         "scripts": [
           "js/browser-polyfill.js",
@@ -38,7 +35,7 @@
         "page": "view/options.html",
         "open_in_tab": false
     },
-    "action": {
+    "browser_action": {
         "default_title": "Shiori",
         "default_popup": "view/popup.html",
         "default_icon": {
