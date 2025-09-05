@@ -70,10 +70,10 @@ btnSave.addEventListener("click", (e) => {
         .finally(() => window.close());
 });
 
-inputTags.addEventListener("keyup", (e) => {
+inputTags.addEventListener("keydown", (e) => {
     // keyCode 13 = "Enter" key on the keyboard
-    if (event.keyCode === 13) {
-        event.preventDefault()
+    if (e.keyCode === 13) {
+        e.preventDefault()
         btnSave.click()
     }
 })
