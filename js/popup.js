@@ -250,8 +250,18 @@ inputSearch.addEventListener("keydown", (e) => {
   }
 });
 
+// Global keyboard shortcut for mode switching
+document.addEventListener("keydown", (e) => {
+  // Ctrl+A (or Cmd+A on Mac) to switch modes
+  if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+    e.preventDefault();
+    const newMode = currentMode === 'search' ? 'add' : 'search';
+    switchToMode(newMode);
+  }
+});
+
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
-  // Check if we should start in search mode (when no current tab URL matches bookmarks)
+  // Always start in search mode, user can press Ctrl+A to switch to add mode
   switchToMode('search');
 });

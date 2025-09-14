@@ -209,6 +209,7 @@ browser.runtime.onMessage.addListener((request) => {
   }
 });
 
+
 browser.tabs.onActivated.addListener(() => updateIcon());
 browser.tabs.onUpdated.addListener(() => updateIcon());
 browser.bookmarks.onCreated.addListener(() => updateIcon());

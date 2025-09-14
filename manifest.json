@@ -58,9 +58,10 @@
   "commands": {
     "_execute_action": {
       "suggested_key": {
-        "default": "Ctrl+Shift+K"
+        "default": "Ctrl+Shift+I",
+        "mac": "Command+Shift+I"
       },
-      "description": "Show bookmark popup"
+      "description": "Open Shiori (Ctrl+A to switch modes)"
     }
   },
   "browser_specific_settings": {

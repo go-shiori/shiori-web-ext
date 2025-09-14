@@ -245,3 +245,25 @@ body {
 #add-mode #input-box #loading-sign:focus {
     color: var(--buttonColor);
 }
+
+/* Mode indicators */
+.mode-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    background-color: var(--border);
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-size: 0.8em;
+}
+
+.mode-text {
+    font-weight: 600;
+    color: var(--color);
+}
+
+.mode-hint {
+    color: var(--colorLink);
+    font-size: 0.9em;
+}
