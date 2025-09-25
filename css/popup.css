@@ -267,3 +267,48 @@ body {
     color: var(--colorLink);
     font-size: 0.9em;
 }
+
+/* Status check screen */
+#status-check {
+    text-align: center;
+    padding: 20px 0;
+}
+
+#status-loading,
+#status-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+#status-loading p,
+#status-error p {
+    color: var(--color);
+    font-size: 1em;
+    margin: 0;
+}
+
+#status-error p {
+    color: var(--errorColor);
+    text-align: center;
+    line-height: 1.4;
+}
+
+#status-check .button {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 0 4px;
+    color: var(--buttonColor);
+    background-color: var(--buttonBg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#status-check .button:hover,
+#status-check .button:focus {
+    color: var(--main);
+}

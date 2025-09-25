@@ -3,8 +3,15 @@ let currentMode = 'search'; // 'search' or 'add'
 let searchResults = [];
 let selectedIndex = -1;
 let searchTimeout;
+let extensionReady = false;
 
 // Get DOM elements
+const statusCheck = document.getElementById("status-check");
+const statusLoading = document.getElementById("status-loading");
+const statusError = document.getElementById("status-error");
+const errorMessage = document.getElementById("error-message");
+const btnOpenOptions = document.getElementById("btn-open-options");
+const btnRetry = document.getElementById("btn-retry");
 const searchMode = document.getElementById("search-mode");
 const addMode = document.getElementById("add-mode");
 const inputSearch = document.getElementById("input-search");
@@ -39,7 +46,63 @@ async function showError(err) {
   });
 }
 
+async function checkExtensionConfiguration() {
+  try {
+    const config = await browser.runtime.sendMessage({ type: "check-config" });
+    
+    if (!config.server || !config.token) {
+      return {
+        ready: false,
+        error: "Extension not configured. Please go to extension options to login.",
+        needsConfig: true
+      };
+    }
+
+    try {
+      await browser.runtime.sendMessage({ 
+        type: "check-health", 
+        server: config.server, 
+        token: config.token 
+      });
+      
+      return { ready: true };
+    } catch (healthError) {
+      return {
+        ready: false,
+        error: `Cannot reach Shiori server: ${healthError.message}`,
+        needsConfig: false
+      };
+    }
+  } catch (error) {
+    return {
+      ready: false,
+      error: `Configuration check failed: ${error.message}`,
+      needsConfig: true
+    };
+  }
+}
+
+function showStatusError(message, needsConfig = false) {
+  statusLoading.style.display = 'none';
+  statusError.style.display = 'block';
+  errorMessage.textContent = message;
+  
+  if (needsConfig) {
+    btnOpenOptions.style.display = 'inline-block';
+  } else {
+    btnOpenOptions.style.display = 'none';
+  }
+}
+
+function showMainInterface() {
+  statusCheck.style.display = 'none';
+  extensionReady = true;
+  switchToMode('search');
+}
+
 function switchToMode(mode) {
+  if (!extensionReady) return;
+  
   currentMode = mode;
   if (mode === 'search') {
     searchMode.style.display = 'block';
@@ -260,8 +323,34 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// Event handlers for status screen
+btnOpenOptions.addEventListener("click", () => {
+  browser.runtime.openOptionsPage();
+  window.close();
+});
+
+btnRetry.addEventListener("click", async () => {
+  statusError.style.display = 'none';
+  statusLoading.style.display = 'block';
+  await initializeExtension();
+});
+
+// Initialize extension
+async function initializeExtension() {
+  try {
+    const status = await checkExtensionConfiguration();
+    
+    if (status.ready) {
+      showMainInterface();
+    } else {
+      showStatusError(status.error, status.needsConfig);
+    }
+  } catch (error) {
+    showStatusError(`Initialization failed: ${error.message}`, true);
+  }
+}
+
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
-  // Always start in search mode, user can press Ctrl+A to switch to add mode
-  switchToMode('search');
+  initializeExtension();
 });

@@ -98,6 +98,40 @@ async function getExtensionConfig() {
   return { token, server };
 }
 
+async function getExtensionConfigSafe() {
+  const { token = "", server = "" } = await browser.storage.local.get();
+  return { token, server };
+}
+
+async function checkServerHealth(server, token) {
+  if (!server) {
+    throw new Error("Server URL is not specified");
+  }
+
+  const srvURL = new URL(server);
+  srvURL.pathname = srvURL.pathname.replace(/\/+$/, '') + '/';
+  const healthURL = new URL(`${srvURL}api/v1/system/info`).toString();
+
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(healthURL, {
+    method: "GET",
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Server health check failed: ${response.status} ${response.statusText}`);
+  }
+
+  return await response.json();
+}
+
 async function openLibraries() {
   const config = await getExtensionConfig();
   return browser.tabs.create({ active: true, url: config.server });
@@ -204,6 +238,10 @@ browser.runtime.onMessage.addListener((request) => {
       return searchBookmarks(request.keyword, request.page);
     case "open-bookmark":
       return openBookmark(request.url, request.newTab);
+    case "check-config":
+      return getExtensionConfigSafe();
+    case "check-health":
+      return checkServerHealth(request.server, request.token);
     default:
       return Promise.resolve();
   }
