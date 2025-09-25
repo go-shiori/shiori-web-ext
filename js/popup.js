@@ -83,6 +83,12 @@ async function checkExtensionConfiguration() {
 }
 
 function showStatusError(message, needsConfig = false) {
+  // Hide main interface elements
+  searchMode.style.display = 'none';
+  addMode.style.display = 'none';
+  
+  // Show status screen
+  statusCheck.style.display = 'block';
   statusLoading.style.display = 'none';
   statusError.style.display = 'block';
   errorMessage.textContent = message;
@@ -330,13 +336,23 @@ btnOpenOptions.addEventListener("click", () => {
 });
 
 btnRetry.addEventListener("click", async () => {
+  // Reset to loading state
   statusError.style.display = 'none';
   statusLoading.style.display = 'block';
+  searchMode.style.display = 'none';
+  addMode.style.display = 'none';
   await initializeExtension();
 });
 
 // Initialize extension
 async function initializeExtension() {
+  // Ensure main interface is hidden during initialization
+  searchMode.style.display = 'none';
+  addMode.style.display = 'none';
+  statusCheck.style.display = 'block';
+  statusLoading.style.display = 'block';
+  statusError.style.display = 'none';
+  
   try {
     const status = await checkExtensionConfiguration();
     

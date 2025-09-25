@@ -274,6 +274,12 @@ body {
     padding: 20px 0;
 }
 
+/* Ensure main interface is hidden by default until extension is ready */
+#search-mode,
+#add-mode {
+    display: none;
+}
+
 #status-loading,
 #status-error {
     display: flex;
