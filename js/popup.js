@@ -271,8 +271,8 @@ btnSave.addEventListener("click", (e) => {
 });
 
 inputTags.addEventListener("keyup", (e) => {
-  if (event.keyCode === 13) {
-    event.preventDefault()
+  if (e.keyCode === 13) {
+    e.preventDefault()
     btnSave.click()
   }
 });
