@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "version": "1.7.4.0",
+  "version": "1.8.0.0",
   "name": "Shiori",
   "author": "Go-Shiori Team",
   "description": "Web extension for Shiori, a simple bookmark manager.",
