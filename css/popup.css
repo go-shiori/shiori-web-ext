@@ -1,1 +1,320 @@
-:root{--contentBg:#FFF;--border:#E5E5E5;--color:#232323;--colorLink:#999;--main:#F44336;--errorColor:#F44336;--buttonColor:#FFF;--buttonBg:#292929}@media (prefers-color-scheme:dark){:root:root{--contentBg:#292929;--border:#191919;--color:#FFF;--buttonBg:#444}}*{border-width:0;box-sizing:border-box;font-family:"Source Sans Pro",sans-serif;margin:0;padding:0;text-decoration:none}a{cursor:pointer}body{font-size:16px;background-color:var(--contentBg)}#popup-box{display:grid;width:380px;grid-template-columns:auto 1fr;padding:16px;grid-gap:4px}#popup-box #logo{grid-column:1;grid-row:1 / span 2;width:50px;margin-right:8px;display:-webkit-box;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-flow:column nowrap;-webkit-box-align:center;align-items:center;-webkit-box-pack:center;justify-content:center}#popup-box #logo img{width:100%}#popup-box #txt-status{color:var(--color);grid-row:1;grid-column:2;font-size:1.5em}#popup-box #menu-box{grid-row:2;grid-column:2;display:-webkit-box;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;flex-flow:row wrap}#popup-box #menu-box>*:not(:first-child){margin-left:8px}#popup-box #menu-box p{color:var(--colorLink)}#popup-box #menu-box a{display:block;color:var(--colorLink);font-size:.9em}#popup-box #menu-box a:hover,#popup-box #menu-box a:focus{color:var(--main);text-decoration:underline}#popup-box #input-box{grid-row:3;grid-column:1 / span 2;display:-webkit-box;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;flex-flow:row nowrap;margin-top:12px;margin-bottom:4px}#popup-box #input-box input{color:var(--color);padding:8px;background-color:var(--contentBg);border:1px solid var(--border);min-width:0;font-size:1em;-webkit-box-flex:1;flex:1 0}#popup-box #input-box a{padding:8px 16px;color:var(--buttonColor);background-color:var(--buttonBg);border:1px solid var(--border);border-left-width:0;font-weight:600}#popup-box #input-box a:hover,#popup-box #input-box a:focus{color:var(--main)}#popup-box #input-box #loading-sign{cursor:default}#popup-box #input-box #loading-sign:hover,#popup-box #input-box #loading-sign:focus{color:var(--buttonColor)}
+:root {
+    --contentBg: #FFF;
+    --border: #E5E5E5;
+    --color: #232323;
+    --colorLink: #999;
+    --main: #F44336;
+    --errorColor: #F44336;
+    --buttonColor: #FFF;
+    --buttonBg: #292929;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:root {
+        --contentBg: #292929;
+        --border: #191919;
+        --color: #FFF;
+        --buttonBg: #444;
+    }
+}
+
+* {
+    border-width: 0;
+    box-sizing: border-box;
+    font-family: "Source Sans Pro", sans-serif;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+a {
+    cursor: pointer;
+}
+
+body {
+    font-size: 16px;
+    background-color: var(--contentBg);
+}
+
+#popup-box {
+    width: 380px;
+    padding: 16px;
+}
+
+#popup-box #logo {
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 8px;
+}
+
+#popup-box #logo img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Search mode layout */
+#search-mode {
+    width: 100%;
+}
+
+#search-input-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+#search-input-box input {
+    color: var(--color);
+    padding: 8px;
+    background-color: var(--contentBg);
+    border: 1px solid var(--border);
+    min-width: 0;
+    font-size: 1em;
+    flex: 1;
+}
+
+#search-input-box a {
+    padding: 8px 16px;
+    color: var(--buttonColor);
+    background-color: var(--buttonBg);
+    border: 1px solid var(--border);
+    border-left-width: 0;
+    font-weight: 600;
+}
+
+#search-input-box a:hover,
+#search-input-box a:focus {
+    color: var(--main);
+}
+
+#search-results {
+    width: 100%;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    background-color: var(--contentBg);
+}
+
+#search-loading,
+#search-empty {
+    padding: 16px;
+    text-align: center;
+    color: var(--colorLink);
+    font-size: 0.9em;
+}
+
+#search-loading i {
+    margin-right: 8px;
+}
+
+#bookmark-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.bookmark-item {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+}
+
+.bookmark-item:hover,
+.bookmark-item.selected {
+    background-color: var(--border);
+}
+
+.bookmark-item:last-child {
+    border-bottom: none;
+}
+
+.bookmark-title {
+    font-weight: 600;
+    color: var(--color);
+    margin-bottom: 4px;
+    font-size: 0.9em;
+    word-break: break-word;
+}
+
+.bookmark-url {
+    color: var(--colorLink);
+    font-size: 0.8em;
+    margin-bottom: 6px;
+    word-break: break-all;
+}
+
+.bookmark-tags {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 4px;
+}
+
+.bookmark-tag {
+    background-color: var(--main);
+    color: var(--buttonColor);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.7em;
+    font-weight: 500;
+}
+
+/* Add mode layout */
+#add-mode {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: 4px;
+    align-items: start;
+}
+
+#add-mode #txt-status {
+    color: var(--color);
+    grid-row: 1;
+    grid-column: 2;
+    font-size: 1.5em;
+    margin-top: 4px;
+}
+
+#add-mode #menu-box {
+    grid-row: 2;
+    grid-column: 2;
+    display: flex;
+    flex-flow: row wrap;
+}
+
+#add-mode #menu-box>*:not(:first-child) {
+    margin-left: 8px;
+}
+
+#add-mode #menu-box p {
+    color: var(--colorLink);
+}
+
+#add-mode #menu-box a {
+    display: block;
+    color: var(--colorLink);
+    font-size: 0.9em;
+}
+
+#add-mode #menu-box a:hover,
+#add-mode #menu-box a:focus {
+    color: var(--main);
+    text-decoration: underline;
+}
+
+#add-mode #input-box {
+    grid-row: 3;
+    grid-column: 1 / span 2;
+    display: flex;
+    flex-flow: row nowrap;
+    margin-top: 12px;
+    margin-bottom: 4px;
+}
+
+#add-mode #input-box input {
+    color: var(--color);
+    padding: 8px;
+    background-color: var(--contentBg);
+    border: 1px solid var(--border);
+    min-width: 0;
+    font-size: 1em;
+    flex: 1;
+}
+
+#add-mode #input-box a {
+    padding: 8px 16px;
+    color: var(--buttonColor);
+    background-color: var(--buttonBg);
+    border: 1px solid var(--border);
+    border-left-width: 0;
+    font-weight: 600;
+}
+
+#add-mode #input-box a:hover,
+#add-mode #input-box a:focus {
+    color: var(--main);
+}
+
+#add-mode #input-box #loading-sign {
+    cursor: default;
+}
+
+#add-mode #input-box #loading-sign:hover,
+#add-mode #input-box #loading-sign:focus {
+    color: var(--buttonColor);
+}
+
+/* Mode indicators */
+.mode-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    background-color: var(--border);
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-size: 0.8em;
+}
+
+.mode-text {
+    font-weight: 600;
+    color: var(--color);
+}
+
+.mode-hint {
+    color: var(--colorLink);
+    font-size: 0.9em;
+}
+
+/* Status check screen */
+#status-check {
+    text-align: center;
+    padding: 20px 0;
+}
+
+/* Ensure main interface is hidden by default until extension is ready */
+#search-mode,
+#add-mode {
+    display: none;
+}
+
+#status-loading,
+#status-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+#status-loading p,
+#status-error p {
+    color: var(--color);
+    font-size: 1em;
+    margin: 0;
+}
+
+#status-error p {
+    color: var(--errorColor);
+    text-align: center;
+    line-height: 1.4;
+}
+
+#status-check .button {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 0 4px;
+    color: var(--buttonColor);
+    background-color: var(--buttonBg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#status-check .button:hover,
+#status-check .button:focus {
+    color: var(--main);
+}

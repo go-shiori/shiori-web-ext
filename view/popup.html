@@ -16,19 +16,63 @@
 
 <body>
     <div id="popup-box">
-        <div id="logo">
-            <img src="../icons/icon.svg">
+        <div id="status-check" style="display: block;">
+            <div id="status-loading">
+                <div id="logo">
+                    <img src="../icons/icon.svg">
+                </div>
+                <p><i class="fas fa-fw fa-spinner fa-spin"></i> Checking configuration...</p>
+            </div>
+            <div id="status-error" style="display: none;">
+                <div id="logo">
+                    <img src="../icons/icon.svg">
+                </div>
+                <p id="error-message"></p>
+                <a id="btn-open-options" class="button">Open Settings</a>
+                <a id="btn-retry" class="button">Retry</a>
+            </div>
         </div>
-        <p id="txt-status">Save to Shiori</p>
-        <div id="menu-box">
-            <a id="btn-libraries" href="#">View libraries</a>
-            <p>&bull;</p>
-            <a id="btn-remove" href="#">Remove bookmark</a>
+        <div id="search-mode" style="display: none;">
+            <div id="mode-indicator-search" class="mode-indicator">
+                <span class="mode-text">Search Mode</span>
+                <span class="mode-hint">Ctrl+A to switch to Add</span>
+            </div>
+            <div id="search-input-box">
+                <div id="logo">
+                    <img src="../icons/icon.svg">
+                </div>
+                <input id="input-search" type="text" placeholder="Search bookmarks..." tabindex="1" autofocus>
+                <a id="btn-switch-add" title="Add bookmark mode"><i class="fas fa-fw fa-plus" aria-label="Add mode"></i></a>
+            </div>
+            <div id="search-results">
+                <div id="search-loading" style="display: none">
+                    <i class="fas fa-fw fa-spinner fa-spin"></i>
+                    <span>Searching...</span>
+                </div>
+                <div id="search-empty" style="display: none">
+                    <span>No bookmarks found</span>
+                </div>
+                <div id="bookmark-list"></div>
+            </div>
         </div>
-        <div id="input-box">
-            <input id="input-tags" type="text" placeholder="Add tags" tabindex="1" autofocus>
-            <a id="btn-save" title="Save"><i class="fas fa-fw fa-save" aria-label="Save"></i></a>
-            <a id="loading-sign" style="display: none"><i class="fas fa-fw fa-spinner fa-spin"></i></a>
+        <div id="add-mode" style="display: none;">
+            <div id="mode-indicator-add" class="mode-indicator">
+                <span class="mode-text">Add Mode</span>
+                <span class="mode-hint">Ctrl+A to switch to Search</span>
+            </div>
+            <p id="txt-status">Save to Shiori</p>
+            <div id="menu-box">
+                <a id="btn-libraries" href="#">View libraries</a>
+                <p>&bull;</p>
+                <a id="btn-remove" href="#">Remove bookmark</a>
+                <p>&bull;</p>
+                <a id="btn-switch-search" href="#">Search bookmarks</a>
+            </div>
+            <div id="input-box">
+                <input id="input-tags" type="text" placeholder="Add tags" tabindex="2">
+                <a id="btn-save" title="Save"><i class="fas fa-fw fa-save" aria-label="Save"></i></a>
+                <a id="loading-sign" style="display: none"><i class="fas fa-fw fa-spinner fa-spin"></i></a>
+            </div>
         </div>
     </div>
 
