@@ -4,7 +4,6 @@ Shiori Web Extension is a simple extension for managing bookmarks using Shiori. 
 
 [![Download button](.github/firefox-addon.png)](https://addons.mozilla.org/en-US/firefox/addon/shiori_ext/)
 
-![Screenshot](./docs/screenshot.png)
 
 ## Versioning
 
@@ -15,6 +14,26 @@ Different releases for the same server version will be appended as the extension
 ## Development Status
 
 This extension is still in beta, however it's already usable at this point. Unfortunately, I've only tested it in Firefox 59+ so there is no guarantee that it will work in another browser.
+
+### Features
+
+If the extension is not set up yet, it will show a message to open the options page to set up the server, username and password.
+
+![Extension not set up](./docs/popup-not-setup.png)
+
+#### Searching bookmarks
+
+You can search your bookmarks using the search bar. The search will be performed in your Shiori instance, so it will return the same results as if you were searching from Shiori web interface.
+
+You can navigate the search results using <kbd>UP</kbd> and <kbd>DOWN</kbd> arrow keys, then open the selected bookmark by pressing <kbd>ENTER</kbd> in a new tab, or in the current tab by pressing <kbd>SHIFT</kbd> + <kbd>ENTER</kbd>.
+
+![Search bookmarks](./docs/popup-search.png)
+
+#### Adding bookmarks
+
+You can add the current page as a bookmark by clicking the `+` button or pressing <kbd>CTRL</kbd> + <kbd>A</kbd> with the popup open.
+
+![Extension adding a new bookmark](./docs/popup-add.png)
 
 ## Installation
 
