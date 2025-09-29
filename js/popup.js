@@ -100,16 +100,18 @@ function showStatusError(message, needsConfig = false) {
   }
 }
 
-function showMainInterface() {
+function showMainInterface(initialMode = 'search') {
   statusCheck.style.display = 'none';
   extensionReady = true;
-  switchToMode('search');
+  switchToMode(initialMode);
 }
 
 function switchToMode(mode) {
   if (!extensionReady) return;
   
   currentMode = mode;
+  browser.storage.local.set({ lastMode: mode });
+
   if (mode === 'search') {
     searchMode.style.display = 'block';
     addMode.style.display = 'none';
@@ -357,7 +359,9 @@ async function initializeExtension() {
     const status = await checkExtensionConfiguration();
     
     if (status.ready) {
-      showMainInterface();
+      const data = await browser.storage.local.get("lastMode");
+      const savedMode = data.lastMode || 'search';
+      showMainInterface(savedMode);
     } else {
       showStatusError(status.error, status.needsConfig);
     }
