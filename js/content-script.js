@@ -58,3 +58,25 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
             break;
     }
 });
+
+function getTheme() {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
+}
+
+function sendTheme(theme) {
+  chrome.runtime.sendMessage({
+    type: 'THEME_CHANGED',
+    theme
+  });
+}
+
+// initial
+sendTheme(getTheme());
+
+// listen for changes
+const media = window.matchMedia('(prefers-color-scheme: dark)');
+media.addEventListener('change', e => {
+  sendTheme(e.matches ? 'dark' : 'light');
+});

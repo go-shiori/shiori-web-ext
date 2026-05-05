@@ -273,7 +273,7 @@ const darkModeIcon = {
 }
 
 async function updateIcon() {
-  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDarkMode = (await browser.storage.local.get('theme')) == 'dark';
   const defaultIcon = isDarkMode ? darkModeIcon : lightModeIcon;
   try {
 
