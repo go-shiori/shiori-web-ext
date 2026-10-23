@@ -16,12 +16,12 @@ async function saveExtensionConfig(cfg) {
 }
 
 async function logout(server, token) {
-    // Make sure token is exists
+    // Make sure token exists
     if (token === "") return Promise.resolve();
 
     // Validate input
     if (server === "") {
-        throw new Error("Server must not empty");
+        throw new Error("Server must not be empty");
     }
 
     // Create logout url
@@ -56,15 +56,15 @@ async function logout(server, token) {
 async function login(server, username, password, remember) {
     // Validate input
     if (server === "") {
-        throw new Error("Server must not empty");
+        throw new Error("Server must not be empty");
     }
 
     if (username === "") {
-        throw new Error("Username must not empty");
+        throw new Error("Username must not be empty");
     }
 
     if (password === "") {
-        throw new Error("Password must not empty");
+        throw new Error("Password must not be empty");
     }
 
     if (typeof remember !== 'boolean') {
